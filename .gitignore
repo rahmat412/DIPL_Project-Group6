@@ -16,3 +16,4 @@ application/logs/*
 !application/logs/.htaccess
 /vendor/
 /GUI_Place/GUI_Place/nbproject/private/
+/GUI_Place/GUI_Place/build/
