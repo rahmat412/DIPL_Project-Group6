@@ -1,5 +1,6 @@
 import { createApp } from "vue";
 import { createWebHistory, createRouter } from "vue-router";
+//import bootstrap from "@/plugins/bootstrap.js"
 
 // styles
 
@@ -33,6 +34,7 @@ import Landing from "@/views/Landing.vue";
 import Profile from "@/views/Profile.vue";
 import Index from "@/views/Index.vue";
 import indexTemp from "@/views/Index_temp.vue";
+import my_profile from "@/views/my_profile.vue";
 
 // routes
 
@@ -86,6 +88,10 @@ const routes = [
   {
     path: "/temp",
     component: Index,
+  },
+  {
+    path: "/myprofile",
+    component: my_profile,
   },
   {
     path: "/",
