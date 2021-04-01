@@ -42,23 +42,13 @@
           </div>
         </div>
       </div>
-
       <img
         class="absolute top-0 b-auto right-0 pt-16 sm:w-6/12 -mt-48 sm:mt-0 w-10/12 max-h-860-px"
         :src="patternVue"
         alt="..."
       />
     </section>
-    <section>
-      <carousel class="story-carousel story-carousel--colors">
-        <slide class="story-carousel__slide">
-          slide 1
-        </slide>
-        <slide class="story-carousel__slide">
-          slide 2
-        </slide >
-      </carousel>
-    </section>
+
     <section class="mt-48 md:mt-40 pb-40 relative bg-blueGray-100">
       <div
         class="-mt-20 top-0 bottom-auto left-0 right-0 w-full absolute h-20"
@@ -771,8 +761,7 @@ import documentation from "@/assets/img/documentation.png";
 import login from "@/assets/img/login.jpg";
 import profile from "@/assets/img/profile.jpg";
 import landing from "@/assets/img/landing.jpg";
-import { Carousel, Slide } from 'vue-snap';
-import 'vue-snap/dist/vue-snap.css'
+
 export default {
   data() {
     return {
@@ -792,8 +781,6 @@ export default {
   components: {
     IndexNavbar,
     FooterComponent,
-    Carousel,
-    Slide,
   },
 };
 </script>
