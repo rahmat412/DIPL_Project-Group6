@@ -8,10 +8,10 @@
         <div class="w-full md:w-8/12 lg:w-6/12 xl:w-6/12 px-4">
           <div class="pt-32 sm:pt-0">
             <h2 class="font-semibold text-4xl text-blueGray-600">
-              <strong>Rent n Stay</strong> - An app for you to find the best place.
+              <strong>Rent n Stay</strong> - A web for you to find the best place.
             </h2>
             <p class="mt-4 text-lg leading-relaxed text-blueGray-500">
-              Place reservation is a software that connect the students and local who own an apartment or boarding house for rent.
+              A software that connect the students and local who own an apartment or boarding house for rent.
               It is a web-based application software to find and rent a place for student,
             </p>
             <div class="mt-12">
