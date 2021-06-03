@@ -1,7 +1,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 // layouts
-import Admin1 from "@/layouts/Admin_v.vue";
+import Admin1 from "@/layouts/admin_v.vue";
 import Auth from "@/layouts/Auth.vue";
 
 // views for Admin layout
