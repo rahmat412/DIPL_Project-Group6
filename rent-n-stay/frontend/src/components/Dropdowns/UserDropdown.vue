@@ -10,11 +10,7 @@
         <span
           class="w-12 h-12 text-sm text-white bg-blueGray-200 inline-flex items-center justify-center rounded-full"
         >
-          <img
-            alt="..."
-            class="w-full rounded-full align-middle border-none shadow-lg"
-            :src="image"
-          />
+          <i class="fas fa-user-circle fa-3x text-blueGray-300 "></i>
         </span>
       </div>
     </a>
@@ -27,29 +23,30 @@
       }"
     >
       <a
-        href="javascript:void(0);"
+        href="/profile"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Action
+        My Profile
       </a>
       <a
         href="javascript:void(0);"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Another action
+        Help
       </a>
       <a
-        href="javascript:void(0);"
+        href="/"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Something else here
+        About
       </a>
       <div class="h-0 my-2 border border-solid border-blueGray-100" />
       <a
-        href="javascript:void(0);"
+        @click="LogOut"
+        href="/auth/login"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Seprated link
+        Log Out
       </a>
     </div>
   </div>
@@ -79,6 +76,11 @@ export default {
         });
       }
     },
+    async LogOut() {
+      localStorage.removeItem('user');
+      localStorage.removeItem('role');
+      localStorage.removeItem('jwt');
+    }
   },
 };
 </script>

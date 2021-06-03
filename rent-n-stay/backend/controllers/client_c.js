@@ -1,4 +1,4 @@
-import { getClient, getClientById, insertClient, updateClientById, deleteClientById } from "../models/client_m.js";
+import { getClient, getClientById, getClientByEmail, insertClient, updateClientById, deleteClientById } from "../models/client_m.js";
 
 // Get All Clients
 export const showClient = (req, res) => {
@@ -25,11 +25,17 @@ export const showClientById = (req, res) => {
 // Create New Client
 export const createClient = (req, res) => {
     const data = req.body;
-    insertClient(data, (err, results) => {
+    getClientByEmail(data.clientEmail, (err, reg) => {
         if (err) {
-            res.send(err);
+            insertClient(data, (err, results) => {
+                if (err) {
+                    res.status(500).send({ message: err });
+                } else {
+                    res.send({ message: "User was registered successfully!" });
+                }
+            });
         } else {
-            res.json(results);
+            res.status(500).send({ message: "email has already registered" });
         }
     });
 }

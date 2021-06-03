@@ -7,8 +7,8 @@
         >
           <div class="rounded-t mb-0 px-6 py-6">
             <div class="text-center mb-3">
-              <h6 class="text-blueGray-500 text-sm font-bold">
-                Sign up
+              <h6 class="text-blueGray-500 text-lg font-bold">
+                Register
               </h6>
             </div>
           </div>
@@ -25,7 +25,7 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Name"
-                  v-model="client_name"
+                  v-model="uname"
                 />
               </div>
 
@@ -40,7 +40,7 @@
                   type="email"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Email"
-                  v-model="client_email"
+                  v-model="uemail"
                 />
               </div>
 
@@ -55,7 +55,7 @@
                   type="password"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Password"
-                  v-model="client_password"
+                  v-model="upassword"
                 />
               </div>
 
@@ -70,13 +70,13 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Phone Number"
-                  v-model="client_phone"
+                  v-model="uphone"
                 />
               </div>
 
               <div class="text-center mt-6">
                 <button
-                  @click="saveClient"
+                  @click="register"
                   class="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                   type="button"
                 >
@@ -93,7 +93,7 @@
               <div class="w-1/2 text-right">
                 <small>Already have an account? </small>
                 <router-link to="/auth/login" class="text-blueGray-600 font-bold">
-                  <small>Sign in</small>
+                  <small>Log in</small>
                 </router-link>
               </div>
             </div>
@@ -104,39 +104,28 @@
   </div>
 </template>
 <script>
-// import axios
-import axios from "axios";
-// to generate id with randomstring
-// import cryptoRandomString from 'crypto-random-string';
-// var crypto = require("crypto");
-var id = Math.random().toString(36).substring(2);
- 
+import axios from 'axios';
 export default {
-  name: "AddClient",
   data() {
     return {
-      client_name: "",
-      client_email: "",
-      client_password: "",
-      client_phone: "",
+      uname: "",
+      uemail: "",
+      upassword: "",
+      uphone: "",
     };
   },
   methods: {
-    // Create New product
-    async saveClient() {
+    // Create New account
+    async register() {
       try {
-        await axios.post("http://localhost:5000/clients", {
-          clientID: id,
-          clientName: this.client_name,
-          clientEmail: this.client_email,
-          clientPassword: this.client_password,
-          clientPhone: this.client_phone,
+        await axios.post("http://localhost:5000/register", {
+          clientID: Math.random().toString(36).substring(2),
+          clientName: this.uname,
+          clientEmail: this.uemail,
+          clientPassword: this.upassword,
+          clientPhone: this.uphone,
         });
-        this.client_name = "";
-        this.client_email = "";
-        this.client_password = "";
-        this.client_phone = "";
-        this.$router.push("/auth/register");
+        this.$router.push("/auth/login");
       } catch (err) {
         console.log(err);
       }

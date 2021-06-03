@@ -19,7 +19,27 @@ export const getClientById = (id, result) => {
             console.log(err);
             result(err, null);
         } else {
-            result(null, results[0]);
+            if (results.length > 0) {
+                result(false, results[0]);
+            } else {
+                result(true, null);
+            }
+        }
+    });
+}
+
+// Get Single Client by email
+export const getClientByEmail = (email, result) => {
+    db.query("SELECT * FROM client WHERE clientEmail = ?", [email], (err, results) => {
+        if (err) {
+            console.log(err);
+            result(err, null);
+        } else {
+            if (results.length > 0) {
+                result(false, results[0]);
+            } else {
+                result(true, null);
+            }
         }
     });
 }
@@ -38,7 +58,7 @@ export const insertClient = (data, result) => {
 
 // Update Client to Database
 export const updateClientById = (data, id, result) => {
-    db.query("UPDATE client SET ClientName = ?, clientEmail = ?, clientPassword = ?, clientPhone = ? WHERE ClientID = ?", [data.client_name, data.client_email, client_password, client_phone, id], (err, results) => {
+    db.query("UPDATE client SET ClientName = ?, clientEmail = ?, clientPassword = ?, clientPhone = ? WHERE ClientID = ?", [data.name, data.email, data.password, data.phone, id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);

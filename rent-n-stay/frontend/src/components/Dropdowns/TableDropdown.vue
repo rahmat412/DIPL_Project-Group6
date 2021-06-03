@@ -2,7 +2,7 @@
   <div>
     <a
       class="text-blueGray-500 py-1 px-3"
-      href="#pablo"
+      href=""
       ref="btnDropdownRef"
       v-on:click="toggleDropdown($event)"
     >
@@ -18,35 +18,51 @@
     >
       <a
         href="javascript:void(0);"
+        @click="showModalEdit()"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Action
+        <i class="fas fa-edit"></i>
+        Edit
       </a>
+      
       <a
-        href="javascript:void(0);"
+        href=""
+        @click="deleteClient(id)"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Another action
-      </a>
-      <a
-        href="javascript:void(0);"
-        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
-      >
-        Something else here
+        <i class="fas fa-trash"></i>
+        Delete
       </a>
     </div>
+    <ModalEdit
+      :id="id"
+      v-show="isModalEditVisible"
+      @close="closeModalEdit"
+    />
   </div>
 </template>
 <script>
 import { createPopper } from "@popperjs/core";
-
+import ModalEdit from '@/components/Modal/ModalEditClient.vue';
+import axios from "axios";
 export default {
   data() {
     return {
       dropdownPopoverShow: false,
+      isModalEditVisible: false,
     };
   },
+  components: {
+    ModalEdit,
+  },
+  props:['id'],
   methods: {
+    showModalEdit() {
+      this.isModalEditVisible = true;
+    },
+    closeModalEdit() {
+      this.isModalEditVisible = false;
+    },
     toggleDropdown: function (event) {
       event.preventDefault();
       if (this.dropdownPopoverShow) {
@@ -56,6 +72,15 @@ export default {
         createPopper(this.$refs.btnDropdownRef, this.$refs.popoverDropdownRef, {
           placement: "bottom-start",
         });
+      }
+    },
+    // Delete Client
+    async deleteClient(id) {
+      try {
+        await axios.delete(`http://localhost:5000/client/${id}`);
+        this.getClients();
+      } catch (err) {
+        console.log(err);
       }
     },
   },

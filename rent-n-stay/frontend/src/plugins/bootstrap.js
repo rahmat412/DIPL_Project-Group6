@@ -1,4 +1,4 @@
-import {Vue} from "vue";
+import { Vue } from "vue";
 import { BootstrapVue } from "bootstrap-vue";
 
 // Import Bootstrap an BootstrapVue CSS files (order is important)
