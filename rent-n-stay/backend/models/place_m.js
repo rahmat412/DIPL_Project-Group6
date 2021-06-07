@@ -1,8 +1,8 @@
 import db from "../config/database.js";
 
-// Get All Clients
-export const getClient = (result) => {
-    db.query("SELECT * FROM client", (err, results) => {
+// Get All Places
+export const getPlace = (result) => {
+    db.query("SELECT * FROM place natural join owner", (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);
@@ -12,35 +12,38 @@ export const getClient = (result) => {
     });
 }
 
-// Get Single Client
-export const getClientById = (id, result) => {
-    db.query("SELECT * FROM client WHERE clientID = ?", [id], (err, results) => {
+// Get Order Active by client
+export const getPlaceByStatus = (id, result) => {
+    db.query("SELECT * FROM place natural join order WHERE placeID = ? (orderStatus = 'Requested' or orderStatus = 'Declined' orderStatus ='Cancelled') order by date desc", [id], (err, results) => {
+        if (err) {
+            console.log(err);
+            result(err, null);
+        } else {
+            result(null, results);
+        }
+    });
+}
+
+// Get Single Place
+export const getPlaceById = (id, result) => {
+    db.query("SELECT * FROM place natural join owner WHERE placeID = ?", [id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);
             return false;
         } else {
-            result(null, results[0]);
-            return true;
+            if (results.length > 0) {
+                result(false, results[0]);
+            } else {
+                result(true, null);
+            }
         }
     });
 }
 
-// Get Single Client by email
-export const getClientByEmail = (email, result) => {
-    db.query("SELECT * FROM client WHERE clientEmail = ?", [email], (err, results) => {
-        if (err) {
-            console.log(err);
-            result(err, null);
-        } else {
-            result(null, results[0]);
-        }
-    });
-}
-
-// Insert Client to Database
-export const insertClient = (data, result) => {
-    db.query("INSERT INTO client SET ?", [data], (err, results) => {
+// Get Place by owner
+export const getPlaceByOwner = (id, result) => {
+    db.query("SELECT * FROM place natural join owner WHERE ownerID = ?", [id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);
@@ -50,9 +53,9 @@ export const insertClient = (data, result) => {
     });
 }
 
-// Update Client to Database
-export const updateClientById = (data, id, result) => {
-    db.query("UPDATE client SET ClientName = ?, clientEmail = ?, clientPassword = ?, clientPhone = ? WHERE ClientID = ?", [data.client_name, data.client_email, client_password, client_phone, id], (err, results) => {
+// Insert Place to Database
+export const insertPlace = (data, result) => {
+    db.query("INSERT INTO place SET ?", [data], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);
@@ -62,9 +65,21 @@ export const updateClientById = (data, id, result) => {
     });
 }
 
-// Delete Client to Database
-export const deleteClientById = (id, result) => {
-    db.query("DELETE FROM client WHERE ClientID = ?", [id], (err, results) => {
+// Update Place to Database
+export const updatePlaceById = (data, id, result) => {
+    db.query("UPDATE place SET ownerID = ?, placeName = ?, placePrice = ?, placeCategory = ? WHERE placeID = ?", [data.owner_id, data.place_name, data.place_price, data.place_category, id], (err, results) => {
+        if (err) {
+            console.log(err);
+            result(err, null);
+        } else {
+            result(null, results);
+        }
+    });
+}
+
+// Delete Place to Database
+export const deletePlaceById = (id, result) => {
+    db.query("DELETE FROM place WHERE placeID = ?", [id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);

@@ -58,7 +58,7 @@ export const insertOwner = (data, result) => {
 
 // Update Owner to Database
 export const updateOwnerById = (data, id, result) => {
-    db.query("UPDATE owner SET OwnerName = ?, ownerEmail = ?, ownerPassword = ?, ownerPhone = ? WHERE OwnerID = ?", [data.owner_name, data.owner_email, owner_password, owner_phone, id], (err, results) => {
+    db.query("UPDATE owner SET ownerName = ?, ownerEmail = ?, ownerPassword = ?, ownerPhone = ? WHERE ownerID = ?", [data.owner_name, data.owner_email, owner_password, owner_phone, id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);
@@ -70,7 +70,7 @@ export const updateOwnerById = (data, id, result) => {
 
 // Delete Owner to Database
 export const deleteOwnerById = (id, result) => {
-    db.query("DELETE FROM owner WHERE OwnerID = ?", [id], (err, results) => {
+    db.query("DELETE FROM owner WHERE ownerID = ?", [id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);

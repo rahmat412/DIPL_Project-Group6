@@ -1,7 +1,6 @@
 import { createApp } from "vue";
-import VueSweetalert2 from 'vue-sweetalert2';
-import Vuelidate from 'vuelidate';
-// import bootstrap from "@/plugins/bootstrap.js"
+import Swal from "@/plugins/useSwal.js";
+import VCalendar from "v-calendar";
 
 // styles
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -14,5 +13,8 @@ import App from "@/App.vue";
 import router from "@/routes/routes.js"
 
 const app = createApp(App);
-app.use(router, Vuelidate, VueSweetalert2);
+
+app.use(router);
+app.use(Swal);
+app.use(VCalendar);
 app.mount("#app");

@@ -1,0 +1,11 @@
+We have to run both CLI for frontend and backend
+-> backend
+1. open the xampp to run mysql db or other apps to run my sql db
+2. start the apache and mysql
+3. import the sql data ("house_rent.sql") in backend folder
+4. open CLI (CMD or Powershell) inside the backend folder
+5. type "node index" and enter
+
+-> frontend
+4. open CLI (CMD or Powershell) inside the frontend folder
+5. type "npm run serve" and enter

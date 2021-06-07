@@ -1,25 +1,29 @@
 <template>
-  <div v-on="alertDisplay" id="app">
+  <div v-on="alertDisplay()" id="app">
     <router-view />
   </div>
 </template>
 <script>
-  export default {
-    data() {
-      return {}
-    },
-    methods: {
-      alertDisplay() {
-        if(!this.$router.meta.isAdmin){
-          this.$swal({
-          title: "Warning",
-          text: "You don't have permission to access this page",
-          type: 'warning',
-          confirmButtonText: 'OK',
-          showLoaderOnConfirm: true
-          })
-        }
+import { useSwal } from "@/plugins/useSwal.js";
+export default {
+  data() {
+    return {}
+  },
+  methods : {
+    alertDisplay: function(){
+      const Swal = useSwal();
+      // var meta = this.$router.meta.role;
+      var str = "hello";
+      if (localStorage.getItem('role') == 4){
+        Swal.fire({
+          icon: "error",
+          title: str,
+          text: "Something went wrong!",
+          showConfirmButton: false,
+          timer: 1000
+        });
       }
-    }
+    } 
   }
+}
 </script>

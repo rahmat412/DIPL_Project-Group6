@@ -4,34 +4,7 @@
       <div class="modal">
         <header class="modal-header">
             <h6 class="text-emerald-500 text-lg font-bold">
-                Add Client
-            </h6>
-          <a
-            type="button"
-            class="btn-close"
-            @click="close"
-          >
-            <i class="fas fa-times"></i>
-          </a>
-        </header>
-
-        <section
-          class="modal-body"
-          id="modalDescription"
-        >
-          <form>
-              <div>
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  Name<template>
-  <transition name="modal-fade">
-    <div class="modal-backdrop">
-      <div class="modal">
-        <header class="modal-header">
-            <h6 class="text-emerald-500 text-lg font-bold">
-                Edit Client
+                Edit Facility
             </h6>
           <button
             type="button"
@@ -53,43 +26,45 @@
                 </label>
                 <input
                   type="text"
-                  class="disabled border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="ID"
+                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  placeholder="Facility ID"
                   v-model="uid"
-                  name="uid"
                   disabled
                 />
               </div>
 
               <div class="relative w-full mb-3">
                 <label
+                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  Place Name
+                </label>
+                <select 
+                  v-model="uplaceid"
+                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                >
+                  <option
+                    v-for="place in places" :key="place.placeID"
+                    v-bind:value="place.placeID"
+                  >
+                    {{place.placeID}} - {{ place.placeName }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="relative w-full mb-3">
+                <label
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2 mt-2"
                   htmlFor="grid-password"
                 >
-                  Name
+                  Facility Name
                 </label>
                 <input
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Name"
+                  placeholder="Facility Name"
                   v-model="uname"
-                  name="uname"
-                />
-              </div>
-
-              <div class="relative w-full mb-3">
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2 mt-2"
-                  htmlFor="grid-password"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Email"
-                  v-model="uemail"
-                  name="uemail"
                 />
               </div>
 
@@ -98,37 +73,26 @@
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
-                  Password
+                  Facility Type
                 </label>
-                <input
-                  type="password"
+                <select 
+                  v-model="utype"
+                  placeholder="Select Owner"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Password"
-                  v-model="upassword"
-                  name="upassword"
-                />
-              </div>
-
-              <div class="relative w-full mb-3">
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
                 >
-                  Phone Number
-                </label>
-                <input
-                  type="text"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Phone Number"
-                  v-model="uphone"
-                  name="uphone"
-                />
+                  <option
+                    v-for="type in types" :key="type"
+                    v-bind:value="type"
+                  >
+                    {{type}}
+                  </option>
+                </select>
               </div>
 
               <div class="text-center mt-6">
                 <footer class="modal-footer">
                 <button
-                  @click="editClient()"
+                  @click="editFacility()"
                   class="bg-emerald-800 text-white active:bg-emerald-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                   type="button"
                 >
@@ -147,41 +111,48 @@ import axios from "axios";
 export default {
   data() {
     return {
-      uid: "",
+      uplaceid:"",
       uname: "",
-      uemail: "",
-      upassword: "",
-      uphone: "",
+      utype: "",
+      types:["Room Facility","General Facility","Parking Facility"],
+      places:{}
     };
   },
   props: ['id'],
   created() {
-    this.getClient();
+    this.getFacility();
+    this.getPlaces();
   },
   methods: {
-    async getClient() {
+    async getFacility() {
       try {
         await axios.get(
-          'http://localhost:5000/client/'+this.id
+          'http://localhost:5000/facility/'+this.id
         ).then((response) => {
-          this.uid = response.data.clientID;
-          this.uname = response.data.clientName;
-          this.uemail = response.data.clientEmail;
-          this.upassword = response.data.clientPassword;
-          this.uphone = response.data.clientPhone;
+          this.uid = response.data.facilityID;
+          this.uplaceid = response.data.placeID;
+          this.uname = response.data.facilityName;
+          this.utype = response.data.facilityType;
         })
       } catch (err) {
         console.log(err);
       }
     },
-    async editClient() {
+    async getPlaces() {
       try {
-        await axios.put('http://localhost:5000/client/'+this.id,
+        const response = await axios.get("http://localhost:5000/place");
+        this.places = response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async editFacility() {
+      try {
+        await axios.put('http://localhost:5000/facility/'+this.id,
           {
+            place_id: this.uplaceid,
             name: this.uname,
-            email: this.uemail,
-            password: this.upassword,
-            phone: this.uphone,
+            type: this.utype,
           }
         );
         this.$router.go()
@@ -194,155 +165,6 @@ export default {
     },
   },
 };
-</script>
-<style>
-  .modal-backdrop {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    background-color: rgba(0, 0, 0, 0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .modal {
-    background: #FFFFFF;
-    overflow-x: auto;
-    display: flex;
-    flex-direction: column;
-    border-radius: 5px;
-  }
-
-  .modal-header,
-  .modal-footer {
-    padding: 20px;
-    display: flex;
-  }
-
-  .modal-header {
-    position: relative;
-    border-bottom: 1px solid #eeeeee;
-    color: #4AAE9B;
-    justify-content: space-between;
-  }
-
-  .modal-footer {
-    border-top: 1px solid #eeeeee;
-    flex-direction: column;
-  }
-
-  .modal-body {
-    position: relative;
-    width: 500px;
-    padding: 20px 20px;
-  }
-
-  .btn-close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    border: none;
-    font-size: 20px;
-    padding: 20px 20px;
-    cursor: pointer;
-    font-weight: bold;
-    color: #4AAE9B;
-    background: transparent;
-  }
-
-  .modal-fade-enter,
-  .modal-fade-leave-to {
-    opacity: 0;
-  }
-
-  .modal-fade-enter-active,
-  .modal-fade-leave-active {
-    transition: opacity .5s ease;
-  }
-</style>
-                </label>
-                <input
-                  type="text"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Name"
-                  v-model="client_name"
-                />
-              </div>
-
-              <div class="relative w-full mb-3">
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2 mt-2"
-                  htmlFor="grid-password"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Email"
-                  v-model="client_email"
-                />
-              </div>
-
-              <div class="relative w-full mb-3">
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Password"
-                  v-model="client_password"
-                />
-              </div>
-
-              <div class="relative w-full mb-3">
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  Phone Number
-                </label>
-                <input
-                  type="text"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Phone Number"
-                  v-model="client_phone"
-                />
-              </div>
-
-              <div class="text-center mt-6">
-                <footer class="modal-footer">
-                <button
-                  @click="saveClient"
-                  class="bg-emerald-800 text-white active:bg-emerald-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                  type="button"
-                >
-                  Add
-                </button>
-                </footer>
-              </div>
-            </form>
-        </section>
-      </div>
-    </div>
-  </transition>
-</template>
-<script>
-  export default {
-    name: 'Modal',
-    methods: {
-      close() {
-        this.$emit('close');
-      },
-    },
-  };
 </script>
 <style>
   .modal-backdrop {

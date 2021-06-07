@@ -10,7 +10,7 @@
             class="font-semibold text-lg"
             :class="['text-white']"
           >
-            Manage Client
+            Manage Facility
           </h3>
         </div>
         <div class="relative w-full px-4 text-right max-w-full flex-grow flex-1">
@@ -39,7 +39,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Username
+              Place Name
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -47,7 +47,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Email
+              Facility Name
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -55,15 +55,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Password
-            </th>
-            <th
-              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
-              :class="[
-                'bg-emerald-800 text-emerald-300 border-emerald-700',
-              ]"
-            >
-              Phone Number
+              Facility Type
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -74,36 +66,31 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="client in clients" :key="client.clientID">
+          <tr v-for="facility in facilitys" :key="facility.facilityID">
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientID}}
+              {{facility.facilityID}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientName}}
+              {{facility.placeName}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientEmail}}
+              {{facility.facilityName}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientPassword}}
-            </td>
-            <td
-              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
-            >
-              {{client.clientPhone}}
+              {{facility.facilityType}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
             >
-                <TableDropdown :id="client.clientID"/>
+                <TableDropdown :id="facility.facilityID"/>
             </td>
           </tr>
         </tbody>
@@ -117,10 +104,9 @@
 </template>
 
 <script>
-import { createPopper } from "@popperjs/core";
 import axios from "axios";
-import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
-import ModalAdd from '@/components/Modal/ModalAddClient.vue';
+import TableDropdown from "@/components/Dropdowns/TableDropdown/facility.vue";
+import ModalAdd from '@/components/Modal/ModalAddFacility.vue';
 
 export default {
   components: {
@@ -131,12 +117,11 @@ export default {
     return {
       isModalAddVisible: false,
       isModalEditVisible: false,
-      dropdownPopoverShow: false,
-      clients: {}, 
+      facilitys: {}, 
     };
   },
   created() {
-    this.getClients();
+    this.getFacilitys();
   },
   methods: {
     showModalAdd() {
@@ -145,22 +130,11 @@ export default {
     closeModalAdd() {
       this.isModalAddVisible = false;
     },
-    toggleDropdown: function (event) {
-      event.preventDefault();
-      if (this.dropdownPopoverShow) {
-        this.dropdownPopoverShow = false;
-      } else {
-        this.dropdownPopoverShow = true;
-        createPopper(this.$refs.btnDropdownRef, this.$refs.popoverDropdownRef, {
-          placement: "bottom-start",
-        });
-      }
-    },
-    // Get All Clients
-    async getClients() {
+    // Get All Facilitys
+    async getFacilitys() {
       try {
-        const response = await axios.get("http://localhost:5000/client");
-        this.clients = response.data;
+        const response = await axios.get("http://localhost:5000/facility");
+        this.facilitys = response.data;
       } catch (err) {
         console.log(err);
       }

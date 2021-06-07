@@ -4,7 +4,7 @@
       <div class="modal">
         <header class="modal-header">
             <h6 class="text-emerald-500 text-lg font-bold">
-                Add Client
+                Add Order
             </h6>
           <a
             type="button"
@@ -25,14 +25,19 @@
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
-                  Name
+                  Client Name
                 </label>
-                <input
-                  type="text"
+                <select 
+                  v-model="uclientid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Name"
-                  v-model="uname"
-                />
+                >
+                  <option
+                    v-for="client in clients" :key="client.clientID"
+                    v-bind:value="client.clientID"
+                  >
+                    {{client.clientID}} - {{ client.clientName }}
+                  </option>
+                </select>
               </div>
 
               <div class="relative w-full mb-3">
@@ -40,14 +45,35 @@
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2 mt-2"
                   htmlFor="grid-password"
                 >
-                  Email
+                  Place Name
                 </label>
-                <input
-                  type="email"
+                <select 
+                  v-model="uplaceid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Email"
-                  v-model="uemail"
-                />
+                >
+                  <option
+                    v-for="place in places" :key="place.placeID"
+                    v-bind:value="place.placeID"
+                  >
+                    {{place.placeID}} - {{ place.placeName }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="text-center relative w-full mb-3">
+                <label
+                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  Order Check-In & Check-Out
+                </label>
+                <v-date-picker
+                  color="green"
+                  v-model='range'
+                  :min-date='new Date()'
+                  is-range
+                  is-expanded
+                  />
               </div>
 
               <div class="relative w-full mb-3">
@@ -55,35 +81,26 @@
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
-                  Password
+                  Status
                 </label>
-                <input
-                  type="password"
+                <select 
+                  v-model="ustatus"
+                  placeholder="Select Owner"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Password"
-                  v-model="upassword"
-                />
-              </div>
-
-              <div class="relative w-full mb-3">
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
                 >
-                  Phone Number
-                </label>
-                <input
-                  type="text"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Phone Number"
-                  v-model="uphone"
-                />
+                  <option
+                    v-for="stat in stats" :key="stat"
+                    v-bind:value="stat"
+                  >
+                    {{stat}}
+                  </option>
+                </select>
               </div>
 
               <div class="text-center mt-6">
                 <footer class="modal-footer">
                 <button
-                  @click="addClient"
+                  @click="addOrder"
                   class="bg-emerald-800 text-white active:bg-emerald-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                   type="button"
                 >
@@ -102,24 +119,52 @@ import axios from "axios";
 export default {  
   data() {
     return {
-      uname: "",
-      uemail: "",
-      upassword: "",
-      uphone: "",
+      uplaceid: "",
+      uclientid: "",
+      range: {
+        start: new Date(),
+        end: new Date(),
+      },
+      clients:{},
+      places:{},
+      ustatus:"",
+      stats:['Requested','Accepted','Declined','Cancelled','In Progress','Completed']
     };
   },
+  created() {
+    this.getPlaces();
+    this.getClients();
+  },
   methods: {
-    // add new client
-    async addClient() {
+    // add new order
+    async addOrder() {
       try {
-        await axios.post("http://localhost:5000/client", {
-          clientID: Math.random().toString(36).substring(2),
-          clientName: this.uname,
-          clientEmail: this.uemail,
-          clientPassword: this.upassword,
-          clientPhone: this.uphone,
+        await axios.post("http://localhost:5000/order", {
+          orderID: Math.random().toString(36).substring(2),
+          clientID: this.uclientid,
+          placeID: this.uplaceid,
+          orderDate: new Date(),
+          orderCheckIn: this.range.start,
+          orderCheckOut: this.range.end,
+          orderStatus: this.ustatus
         });
         this.$router.go();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async getClients() {
+      try {
+        const response = await axios.get("http://localhost:5000/client");
+        this.clients = response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async getPlaces() {
+      try {
+        const response = await axios.get("http://localhost:5000/place");
+        this.places = response.data;
       } catch (err) {
         console.log(err);
       }

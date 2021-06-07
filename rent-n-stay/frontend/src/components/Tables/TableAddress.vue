@@ -10,7 +10,7 @@
             class="font-semibold text-lg"
             :class="['text-white']"
           >
-            Manage Client
+            Manage Address
           </h3>
         </div>
         <div class="relative w-full px-4 text-right max-w-full flex-grow flex-1">
@@ -39,7 +39,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Username
+              Place Name
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -47,7 +47,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Email
+              Street
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -55,7 +55,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Password
+              District
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -63,7 +63,15 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Phone Number
+              Regency
+            </th>
+            <th
+              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+              :class="[
+                'bg-emerald-800 text-emerald-300 border-emerald-700',
+              ]"
+            >
+              Postcode
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -74,36 +82,41 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="client in clients" :key="client.clientID">
+          <tr v-for="address in addresss" :key="address.addressID">
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientID}}
+              {{address.addressID}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientName}}
+              {{address.placeName}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientEmail}}
+              {{address.addressStreet}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientPassword}}
+              {{address.addressDistrict}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientPhone}}
+              {{address.addressRegency}}
+            </td>
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+              {{address.addressPostcode}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
             >
-                <TableDropdown :id="client.clientID"/>
+                <TableDropdown :id="address.addressID"/>
             </td>
           </tr>
         </tbody>
@@ -119,8 +132,8 @@
 <script>
 import { createPopper } from "@popperjs/core";
 import axios from "axios";
-import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
-import ModalAdd from '@/components/Modal/ModalAddClient.vue';
+import TableDropdown from "@/components/Dropdowns/TableDropdown/address.vue";
+import ModalAdd from '@/components/Modal/ModalAddAddress.vue';
 
 export default {
   components: {
@@ -132,11 +145,11 @@ export default {
       isModalAddVisible: false,
       isModalEditVisible: false,
       dropdownPopoverShow: false,
-      clients: {}, 
+      addresss: {}, 
     };
   },
   created() {
-    this.getClients();
+    this.getAddresss();
   },
   methods: {
     showModalAdd() {
@@ -156,11 +169,11 @@ export default {
         });
       }
     },
-    // Get All Clients
-    async getClients() {
+    // Get All Addresss
+    async getAddresss() {
       try {
-        const response = await axios.get("http://localhost:5000/client");
-        this.clients = response.data;
+        const response = await axios.get("http://localhost:5000/address");
+        this.addresss = response.data;
       } catch (err) {
         console.log(err);
       }

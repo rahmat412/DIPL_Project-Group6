@@ -124,7 +124,7 @@ export default {
   },
   computed : {
       isLoggedIn : function(){ return localStorage.getItem('jwt') != null},
-      is_admin : function(){ return localStorage.getItem('role') == 1}
+      is_admin : function(){ return (localStorage.getItem('role') == 1) || (localStorage.getItem('role') == 0)}
   },
   methods: {
     setNavbarOpen: function () {

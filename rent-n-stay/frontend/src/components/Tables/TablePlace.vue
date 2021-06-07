@@ -10,7 +10,7 @@
             class="font-semibold text-lg"
             :class="['text-white']"
           >
-            Manage Client
+            Manage Place
           </h3>
         </div>
         <div class="relative w-full px-4 text-right max-w-full flex-grow flex-1">
@@ -39,7 +39,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Username
+              Place Name
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -47,7 +47,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Email
+              Owner Name
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -55,7 +55,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Password
+              Place Price
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -63,7 +63,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Phone Number
+              Place Category
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -74,36 +74,36 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="client in clients" :key="client.clientID">
+          <tr v-for="place in places" :key="place.placeID">
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientID}}
+              {{place.placeID}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientName}}
+              {{place.placeName}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientEmail}}
+              {{place.ownerName}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientPassword}}
+              {{place.placePrice}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientPhone}}
+              {{place.placeCategory}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
             >
-                <TableDropdown :id="client.clientID"/>
+                <TableDropdown :id="place.placeID"/>
             </td>
           </tr>
         </tbody>
@@ -117,10 +117,9 @@
 </template>
 
 <script>
-import { createPopper } from "@popperjs/core";
 import axios from "axios";
-import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
-import ModalAdd from '@/components/Modal/ModalAddClient.vue';
+import TableDropdown from "@/components/Dropdowns/TableDropdown/place.vue";
+import ModalAdd from '@/components/Modal/ModalAddPlace.vue';
 
 export default {
   components: {
@@ -132,11 +131,11 @@ export default {
       isModalAddVisible: false,
       isModalEditVisible: false,
       dropdownPopoverShow: false,
-      clients: {}, 
+      places: {}, 
     };
   },
   created() {
-    this.getClients();
+    this.getPlaces();
   },
   methods: {
     showModalAdd() {
@@ -145,22 +144,11 @@ export default {
     closeModalAdd() {
       this.isModalAddVisible = false;
     },
-    toggleDropdown: function (event) {
-      event.preventDefault();
-      if (this.dropdownPopoverShow) {
-        this.dropdownPopoverShow = false;
-      } else {
-        this.dropdownPopoverShow = true;
-        createPopper(this.$refs.btnDropdownRef, this.$refs.popoverDropdownRef, {
-          placement: "bottom-start",
-        });
-      }
-    },
-    // Get All Clients
-    async getClients() {
+    // Get All Places
+    async getPlaces() {
       try {
-        const response = await axios.get("http://localhost:5000/client");
-        this.clients = response.data;
+        const response = await axios.get("http://localhost:5000/place");
+        this.places = response.data;
       } catch (err) {
         console.log(err);
       }

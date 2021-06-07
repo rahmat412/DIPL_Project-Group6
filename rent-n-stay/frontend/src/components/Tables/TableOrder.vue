@@ -10,7 +10,7 @@
             class="font-semibold text-lg"
             :class="['text-white']"
           >
-            Manage Client
+            Manage Order
           </h3>
         </div>
         <div class="relative w-full px-4 text-right max-w-full flex-grow flex-1">
@@ -39,7 +39,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Username
+              Client Name
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -47,7 +47,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Email
+              Place Name
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -55,7 +55,7 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Password
+              Order Date
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -63,7 +63,23 @@
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
             >
-              Phone Number
+              Order Check In
+            </th>
+            <th
+              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+              :class="[
+                'bg-emerald-800 text-emerald-300 border-emerald-700',
+              ]"
+            >
+              Order Check Out
+            </th>
+            <th
+              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+              :class="[
+                'bg-emerald-800 text-emerald-300 border-emerald-700',
+              ]"
+            >
+              Status
             </th>
             <th
               class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
@@ -74,36 +90,46 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="client in clients" :key="client.clientID">
+          <tr v-for="order in orders" :key="order.orderID">
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientID}}
+              {{order.orderID}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientName}}
+              {{order.clientName}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientEmail}}
+              {{order.placeName}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientPassword}}
+              {{order.orderDate}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
-              {{client.clientPhone}}
+              {{order.orderCheckIn}}
+            </td>
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+              {{order.orderCheckOut}}
+            </td>
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+              {{order.orderStatus}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"
             >
-                <TableDropdown :id="client.clientID"/>
+                <TableDropdown :id="order.orderID"/>
             </td>
           </tr>
         </tbody>
@@ -117,10 +143,9 @@
 </template>
 
 <script>
-import { createPopper } from "@popperjs/core";
 import axios from "axios";
-import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
-import ModalAdd from '@/components/Modal/ModalAddClient.vue';
+import TableDropdown from "@/components/Dropdowns/TableDropdown/order.vue";
+import ModalAdd from '@/components/Modal/ModalAddOrder.vue';
 
 export default {
   components: {
@@ -131,12 +156,11 @@ export default {
     return {
       isModalAddVisible: false,
       isModalEditVisible: false,
-      dropdownPopoverShow: false,
-      clients: {}, 
+      orders: {}, 
     };
   },
   created() {
-    this.getClients();
+    this.getOrders();
   },
   methods: {
     showModalAdd() {
@@ -145,22 +169,11 @@ export default {
     closeModalAdd() {
       this.isModalAddVisible = false;
     },
-    toggleDropdown: function (event) {
-      event.preventDefault();
-      if (this.dropdownPopoverShow) {
-        this.dropdownPopoverShow = false;
-      } else {
-        this.dropdownPopoverShow = true;
-        createPopper(this.$refs.btnDropdownRef, this.$refs.popoverDropdownRef, {
-          placement: "bottom-start",
-        });
-      }
-    },
-    // Get All Clients
-    async getClients() {
+    // Get All Orders
+    async getOrders() {
       try {
-        const response = await axios.get("http://localhost:5000/client");
-        this.clients = response.data;
+        const response = await axios.get("http://localhost:5000/order");
+        this.orders = response.data;
       } catch (err) {
         console.log(err);
       }

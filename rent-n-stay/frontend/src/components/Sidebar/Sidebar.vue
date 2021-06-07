@@ -82,7 +82,7 @@
         <ul class="md:flex-col md:min-w-full flex flex-col list-none">
           <li class="items-center">
             <router-link
-              to="/admin/dashboard"
+              to="/admin1/dashboard"
               v-slot="{ href, navigate, isActive }"
             >
               <a
@@ -106,7 +106,7 @@
 
           <li class="items-center">
             <router-link
-              to="/admin/settings"
+              to="/admin1/settings"
               v-slot="{ href, navigate, isActive }"
             >
               <a
@@ -130,7 +130,7 @@
 
           <li class="items-center">
             <router-link
-              to="/admin/tables"
+              to="/admin1/tables"
               v-slot="{ href, navigate, isActive }"
             >
               <a
@@ -153,7 +153,7 @@
           </li>
 
           <li class="items-center">
-            <router-link to="/admin/maps" v-slot="{ href, navigate, isActive }">
+            <router-link to="/admin1/maps" v-slot="{ href, navigate, isActive }">
               <a
                 :href="href"
                 @click="navigate"

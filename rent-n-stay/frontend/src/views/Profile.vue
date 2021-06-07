@@ -201,6 +201,11 @@ export default {
               this.upassword = response.data.clientPassword;
               this.uphone = response.data.clientPhone;
             })
+        } else {
+          this.uname = "admin";
+          this.uemail = "admin";
+          this.upassword = "admin";
+          this.uphone = "+62";
         }
       } catch (err) {
         console.log(err);

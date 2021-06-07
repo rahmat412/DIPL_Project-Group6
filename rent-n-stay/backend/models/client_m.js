@@ -58,7 +58,7 @@ export const insertClient = (data, result) => {
 
 // Update Client to Database
 export const updateClientById = (data, id, result) => {
-    db.query("UPDATE client SET ClientName = ?, clientEmail = ?, clientPassword = ?, clientPhone = ? WHERE ClientID = ?", [data.name, data.email, data.password, data.phone, id], (err, results) => {
+    db.query("UPDATE client SET clientName = ?, clientEmail = ?, clientPassword = ?, clientPhone = ? WHERE clientID = ?", [data.name, data.email, data.password, data.phone, id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);
@@ -70,7 +70,7 @@ export const updateClientById = (data, id, result) => {
 
 // Delete Client to Database
 export const deleteClientById = (id, result) => {
-    db.query("DELETE FROM client WHERE ClientID = ?", [id], (err, results) => {
+    db.query("DELETE FROM client WHERE clientID = ?", [id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);

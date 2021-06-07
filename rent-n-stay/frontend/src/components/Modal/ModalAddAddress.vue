@@ -4,7 +4,7 @@
       <div class="modal">
         <header class="modal-header">
             <h6 class="text-emerald-500 text-lg font-bold">
-                Add Client
+                Add Address
             </h6>
           <a
             type="button"
@@ -25,13 +25,33 @@
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
-                  Name
+                  Place Name
+                </label>
+                <select 
+                  v-model="uplaceid"
+                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                >
+                  <option
+                    v-for="place in places" :key="place.placeID"
+                    v-bind:value="place.placeID"
+                  >
+                    {{place.placeID}} - {{ place.placeName }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="relative w-full mb-3">
+                <label
+                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  Street
                 </label>
                 <input
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Name"
-                  v-model="uname"
+                  placeholder="Street"
+                  v-model="ustreet"
                 />
               </div>
 
@@ -40,50 +60,50 @@
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2 mt-2"
                   htmlFor="grid-password"
                 >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Email"
-                  v-model="uemail"
-                />
-              </div>
-
-              <div class="relative w-full mb-3">
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  Password
-                </label>
-                <input
-                  type="password"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Password"
-                  v-model="upassword"
-                />
-              </div>
-
-              <div class="relative w-full mb-3">
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
-                >
-                  Phone Number
+                  District
                 </label>
                 <input
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Phone Number"
-                  v-model="uphone"
+                  placeholder="District"
+                  v-model="udistrict"
+                />
+              </div>
+
+              <div class="relative w-full mb-3">
+                <label
+                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  Regency
+                </label>
+                <input
+                  type="text"
+                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  placeholder="Regency"
+                  v-model="uregency"
+                />
+              </div>
+
+              <div class="relative w-full mb-3">
+                <label
+                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  Postcode
+                </label>
+                <input
+                  type="text"
+                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                  placeholder="Postcode"
+                  v-model="upostcode"
                 />
               </div>
 
               <div class="text-center mt-6">
                 <footer class="modal-footer">
                 <button
-                  @click="addClient"
+                  @click="addAddress"
                   class="bg-emerald-800 text-white active:bg-emerald-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                   type="button"
                 >
@@ -102,24 +122,38 @@ import axios from "axios";
 export default {  
   data() {
     return {
-      uname: "",
-      uemail: "",
-      upassword: "",
-      uphone: "",
+      uplaceid:"",
+      ustreet:"",
+      udistrict:"",
+      uregency:"",
+      upostcode:"",
+      places:{}
     };
   },
+  created() {
+    this.getPlaces();
+  },
   methods: {
-    // add new client
-    async addClient() {
+    // add new address
+    async addAddress() {
       try {
-        await axios.post("http://localhost:5000/client", {
-          clientID: Math.random().toString(36).substring(2),
-          clientName: this.uname,
-          clientEmail: this.uemail,
-          clientPassword: this.upassword,
-          clientPhone: this.uphone,
+        await axios.post("http://localhost:5000/address", {
+          addressID: Math.random().toString(36).substring(2),
+          placeID: this.uplaceid,
+          addressStreet: this.ustreet,
+          addressDistrict: this.udistrict,
+          addressRegency: this.uregency,
+          addressPostcode: this.upostcode,
         });
         this.$router.go();
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async getPlaces() {
+      try {
+        const response = await axios.get("http://localhost:5000/place");
+        this.places = response.data;
       } catch (err) {
         console.log(err);
       }

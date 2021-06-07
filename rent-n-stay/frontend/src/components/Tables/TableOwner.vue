@@ -119,7 +119,7 @@
 <script>
 import { createPopper } from "@popperjs/core";
 import axios from "axios";
-import TableDropdown from "@/components/Dropdowns/TableDropdown.vue";
+import TableDropdown from "@/components/Dropdowns/TableDropdown/owner.vue";
 import ModalAdd from '@/components/Modal/ModalAddOwner.vue';
 
 export default {

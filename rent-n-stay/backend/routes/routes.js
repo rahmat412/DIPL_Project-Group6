@@ -5,7 +5,12 @@ import express from "express";
 import { showAdmin, showAdminById, createAdmin, updateAdmin, deleteAdmin } from "../controllers/admin_c.js";
 import { showOwner, showOwnerById, createOwner, updateOwner, deleteOwner } from "../controllers/owner_c.js";
 import { showClient, showClientById, createClient, updateClient, deleteClient } from "../controllers/client_c.js";
+import { showOrder, showOrderById, showOrderActiveByClient, showOrderActiveByOwner, showOrderHistoryByClient, showOrderHistoryByOwner, createOrder, updateOrder, updateOrderStatus, deleteOrder } from "../controllers/order_c.js";
+import { showPlace, showPlaceById, showPlaceByOwner, showPlaceByStatus, createPlace, updatePlace, deletePlace } from "../controllers/place_c.js";
+import { showFacility, showFacilityById, showFacilityByPlace, createFacility, updateFacility, deleteFacility } from "../controllers/facility_c.js";
+import { showAddress, showAddressById, showAddressByPlace, createAddress, updateAddress, deleteAddress } from "../controllers/address_c.js";
 import { register, login, logout } from "../controllers/auth_c.js";
+
 
 // init express router
 const router = express.Router();
@@ -66,6 +71,93 @@ router.put('/client/:id', updateClient);
 
 // Delete Client
 router.delete('/client/:id', deleteClient);
+
+// Get All Place
+router.get('/place', showPlace);
+
+// Get Single Place
+router.get('/place/:id', showPlaceById);
+
+// Get Place by Owner
+router.get('/placeOwner/:id', showPlaceByOwner);
+
+// Get Place by status
+router.get('/placeStatus/:id', showPlaceByStatus);
+
+// Create New Place
+router.post('/place', createPlace);
+
+// Update Place
+router.put('/place/:id', updatePlace);
+
+// Delete Place
+router.delete('/place/:id', deletePlace);
+
+// Get All Order
+router.get('/Order', showOrder);
+
+// Get Single order
+router.get('/order/:id', showOrderById);
+
+// Get order active by client
+router.get('/orderActiveClient/:id', showOrderActiveByClient);
+
+// Get order history by client
+router.get('/orderHistoryClient/:id', showOrderHistoryByClient);
+
+// Get order active by owner
+router.get('/orderActiveOwner/:id', showOrderActiveByOwner);
+
+// Get order history by owner
+router.get('/orderHistoryOwner/:id', showOrderHistoryByOwner);
+
+// Create New Status
+router.post('/order', createOrder);
+
+// Update Order
+router.put('/order/:id', updateOrder);
+
+// Update Order by status
+router.put('/order/:id', updateOrderStatus);
+
+// Delete Order
+router.delete('/order/:id', deleteOrder);
+
+// Get All Facility
+router.get('/facility', showFacility);
+
+// Get Single Facility
+router.get('/facility/:id', showFacilityById);
+
+// Get Single Facility
+router.get('/facilityPlace/:id', showFacilityByPlace);
+
+// Create New Facility
+router.post('/facility', createFacility);
+
+// Update Facility
+router.put('/facility/:id', updateFacility);
+
+// Delete Facility
+router.delete('/facility/:id', deleteFacility);
+
+// Get All Address
+router.get('/address', showAddress);
+
+// Get Single Address
+router.get('/address/:id', showAddressById);
+
+// Get Single Address
+router.get('/addressPlace/:id', showAddressByPlace);
+
+// Create New Address
+router.post('/address', createAddress);
+
+// Update Address
+router.put('/address/:id', updateAddress);
+
+// Delete Address
+router.delete('/address/:id', deleteAddress);
 
 // export default router
 export default router;

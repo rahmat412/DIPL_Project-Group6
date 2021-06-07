@@ -4,7 +4,7 @@
       <div class="modal">
         <header class="modal-header">
             <h6 class="text-emerald-500 text-lg font-bold">
-                Edit Client
+                Edit Place
             </h6>
           <a
             type="button"
@@ -29,7 +29,6 @@
                   class="disabled border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="ID"
                   v-model="uid"
-                  name="uid"
                   disabled
                 />
               </div>
@@ -39,14 +38,13 @@
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2 mt-2"
                   htmlFor="grid-password"
                 >
-                  Name
+                  Place Name
                 </label>
                 <input
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Name"
+                  placeholder="Place Name"
                   v-model="uname"
-                  name="uname"
                 />
               </div>
 
@@ -55,14 +53,33 @@
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2 mt-2"
                   htmlFor="grid-password"
                 >
-                  Email
+                  Owner Name
+                </label>
+                <select 
+                  v-model="uownerid"
+                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                >
+                  <option
+                    v-for="owner in owners" :key="owner.ownerID"
+                    v-bind:value="owner.ownerID"
+                  >
+                    {{owner.ownerID}} - {{ owner.ownerName }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="relative w-full mb-3">
+                <label
+                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
+                  htmlFor="grid-password"
+                >
+                  Price
                 </label>
                 <input
-                  type="email"
+                  type="number"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Email"
-                  v-model="uemail"
-                  name="uemail"
+                  placeholder="Price"
+                  v-model="uprice"
                 />
               </div>
 
@@ -71,37 +88,25 @@
                   class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
                   htmlFor="grid-password"
                 >
-                  Password
+                  Category
                 </label>
-                <input
-                  type="password"
+                <select 
+                  v-model="ucategory"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Password"
-                  v-model="upassword"
-                  name="upassword"
-                />
-              </div>
-
-              <div class="relative w-full mb-3">
-                <label
-                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-2"
-                  htmlFor="grid-password"
                 >
-                  Phone Number
-                </label>
-                <input
-                  type="text"
-                  class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Phone Number"
-                  v-model="uphone"
-                  name="uphone"
-                />
+                  <option
+                    v-for="cat in cats" :key="cat"
+                    v-bind:value="cat"
+                  >
+                    {{cat}}
+                  </option>
+                </select>
               </div>
 
               <div class="text-center mt-6">
                 <footer class="modal-footer">
                 <button
-                  @click="editClient()"
+                  @click="editPlace()"
                   class="bg-emerald-800 text-white active:bg-emerald-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
                   type="button"
                 >
@@ -122,39 +127,50 @@ export default {
     return {
       uid: "",
       uname: "",
-      uemail: "",
-      upassword: "",
-      uphone: "",
-    };
+      uownerid: "",
+      uprice: "",
+      ucategory: "",
+      cats:["Apartment","Boarding House","Dormitory"],
+      owners: {},
+    }
   },
   props: ['id'],
   created() {
-    this.getClient();
+    this.getPlace();
+    this.getOwners();
   },
   methods: {
-    async getClient() {
+    async getPlace() {
       try {
         await axios.get(
-          'http://localhost:5000/client/'+this.id
+          'http://localhost:5000/place/'+this.id
         ).then((response) => {
-          this.uid = response.data.clientID;
-          this.uname = response.data.clientName;
-          this.uemail = response.data.clientEmail;
-          this.upassword = response.data.clientPassword;
-          this.uphone = response.data.clientPhone;
+          this.uid = response.data.placeID;
+          this.uname = response.data.placeName;
+          this.uownerid = response.data.ownerID;
+          this.uprice = response.data.placePrice;
+          this.ucategory = response.data.placeCategory;
         })
       } catch (err) {
         console.log(err);
       }
     },
-    async editClient() {
+    async getOwners() {
       try {
-        await axios.put('http://localhost:5000/client/'+this.id,
+        const response = await axios.get("http://localhost:5000/owner");
+        this.owners = response.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async editPlace() {
+      try {
+        await axios.put('http://localhost:5000/place/'+this.id,
           {
-            name: this.uname,
-            email: this.uemail,
-            password: this.upassword,
-            phone: this.uphone,
+            owner_id: this.uownerid,
+            place_name: this.uname,
+            place_price: this.uprice,
+            place_category: this.ucategory,
           }
         );
         this.$router.go()
