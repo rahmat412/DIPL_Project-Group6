@@ -1,7 +1,7 @@
 <template>
   <div>
     <a
-      class="hover:text-blueGray-500 text-blueGray-700 px-3 py-2 flex items-center text-xs uppercase font-bold"
+      class="hover:text-blueGray-500 text-blueGray-700 px-3 py-3 flex items-center text-s uppercase font-bold"
       href="#pablo"
       ref="btnDropdownRef"
       v-on:click="toggleDropdown($event)"
@@ -19,7 +19,7 @@
       <span
         class="text-sm pt-2 pb-0 px-4 font-bold block w-full whitespace-nowrap bg-transparent text-blueGray-400"
       >
-        Admin Layout
+        Admin Menu
       </span>
       <router-link
         to="/admin/dashboard"
@@ -28,22 +28,40 @@
         Dashboard
       </router-link>
       <router-link
-        to="/admin/settings"
+        to="/admin/client"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Settings
+        Manage Client
       </router-link>
       <router-link
-        to="/admin/tables"
+        to="/admin/owner"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Tables
+        Manage Owner
       </router-link>
       <router-link
-        to="/admin/maps"
+        to="/admin/place"
         class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
       >
-        Maps
+        Manage Place
+      </router-link>
+      <router-link
+        to="/admin/address"
+        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+      >
+        Manage Address
+      </router-link>
+      <router-link
+        to="/admin/facility"
+        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+      >
+        Manage Facility
+      </router-link>
+      <router-link
+        to="/admin/order"
+        class="text-sm py-2 px-4 font-normal block w-full whitespace-nowrap bg-transparent text-blueGray-700"
+      >
+        Manage Order
       </router-link>
       <div class="h-0 mx-4 my-2 border border-solid border-blueGray-100" />
       <span

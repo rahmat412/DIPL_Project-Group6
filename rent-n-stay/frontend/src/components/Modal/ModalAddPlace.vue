@@ -28,8 +28,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Place Name"
-                  v-model="uname"
+                  v-model="state.name"
                 />
+                <span v-if="v$.name.$error" class="text-left block text-sm px-2 text-red-500">{{v$.name.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -40,7 +41,7 @@
                   Owner Name
                 </label>
                 <select 
-                  v-model="uownerid"
+                  v-model="state.ownerid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
                   <option
@@ -50,6 +51,7 @@
                     {{owner.ownerID}} - {{ owner.ownerName }}
                   </option>
                 </select>
+                <span v-if="v$.ownerid.$error" class="text-left block text-sm px-2 text-red-500">{{v$.ownerid.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -63,8 +65,9 @@
                   type="number"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Price"
-                  v-model="uprice"
+                  v-model="state.price"
                 />
+                <span v-if="v$.price.$error" class="text-left block text-sm px-2 text-red-500">{{v$.price.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -75,7 +78,7 @@
                   Category
                 </label>
                 <select 
-                  v-model="ucategory"
+                  v-model="state.category"
                   placeholder="Select Owner"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
@@ -86,6 +89,45 @@
                     {{cat}}
                   </option>
                 </select>
+                <span v-if="v$.category.$error" class="text-left block text-sm px-2 text-red-500">{{v$.category.$errors[0].$message}}</span>
+              </div>
+
+              <div class="relative w-full mb-3">
+                <label
+                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-4"
+                  htmlFor="grid-password"
+                >
+                  Place Image
+                </label>
+                <div v-if="!state.image">
+                  <input
+                    style="display:none"
+                    type="file"
+                    @change="selectFile"
+                    ref="fileInput"
+                  >
+                  <a
+                    class="bg-emerald-500 text-white active:bg-emerald-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                    @click="$refs.fileInput.click()"
+                  >
+                    Pick Image 
+                  </a>
+                  <span v-if="message" class="text-sm px-2 text-red-500">{{message}}</span>
+                  <span v-if="v$.image.$error" class="text-left block text-sm px-2 text-red-500">{{v$.image.$errors[0].$message}}</span>
+                </div>
+                <div v-else class="text-center">
+                  <img :src="preview"/>
+                  <label
+                    class="text-left block uppercase text-emerald-600 text-xs font-bold mb-4"
+                  >
+                    {{state.image.name}}
+                  </label>
+                  <a
+                    class="bg-emerald-500 text-white active:bg-emerald-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-4 w-full ease-linear transition-all duration-150"
+                    @click="removeImage">
+                    Remove image
+                  </a>
+                </div>
               </div>
 
               <div class="text-center mt-6">
@@ -106,16 +148,39 @@
   </transition>
 </template>
 <script>
+import useValidate from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
+import Swal from 'sweetalert2';
 import axios from "axios";
 export default {
+  setup(){
+    const state = reactive ({
+      name: "",
+      ownerid: "",
+      price: "",
+      category: "",
+      image: "",
+    })
+    const rules = computed(() => {
+      return {
+        name: { required },
+        ownerid: { required },
+        price:{ required },
+        category: { required },
+        image: { required },
+      }
+    })
+    const v$ = useValidate(rules,state)
+    return {
+      state,
+      v$,
+    }
+  },
   data() {
     return {
-      uid: "",
-      uname: "",
-      uownerid: "",
-      uowner: "",
-      uprice: "",
-      ucategory: "",
+      preview: null,
+      message: "",
       cats:["Apartment","Boarding House","Dormitory"],
       owners: {},
     }
@@ -124,19 +189,42 @@ export default {
     this.getOwner();
   },
   methods: {
+    selectFile(event){
+      this.message = "";
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+      this.state.image = event.target.files[0];
+      this.preview = URL.createObjectURL(this.state.image);
+      if(!allowedTypes.includes(this.state.image.type)){
+        this.message = "Filetype is wrong!!";
+        this.removeImage();
+      }
+    },
+    removeImage(){
+      this.state.image = "";
+    },
     // add new place
     async addPlace() {
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      }
+      const formData = new FormData();
+      formData.append('file', this.state.image);
       try {
+        const img = await axios.post("http://localhost:5000/upload", formData)
         await axios.post("http://localhost:5000/place", {
           placeID: Math.random().toString(36).substring(2),
           ownerID: this.uownerid,
           placeName: this.uname,
           placePrice: this.uprice,
           placeCategory: this.ucategory,
+          placeImage: img.data.filename,
         });
-        this.$router.go();
+        this.sAlert("success","Yeay..","Adding Place Success");
+        this.close();
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Adding Place Failed");
       }
     },
     async getOwner() {
@@ -147,8 +235,18 @@ export default {
         console.log(err);
       }
     },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
+    },
     close() {
       this.$emit('close');
+      this.$router.go();
     },
   },
 };

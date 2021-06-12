@@ -1,4 +1,4 @@
-import { getPlace, getPlaceById, getPlaceByOwner, getPlaceByStatus, insertPlace, updatePlaceById, deletePlaceById } from "../models/place_m.js";
+import { getPlace, getPlaceById, getPlaceByOwner, getPlaceBySearch, insertPlace, updatePlaceById, deletePlaceById, getPlaceAsc, getPlaceAddress, getPlaceDesc } from "../models/place_m.js";
 
 // Get All Places
 export const showPlace = (req, res) => {
@@ -9,6 +9,35 @@ export const showPlace = (req, res) => {
             res.json(results);
         }
     });
+}
+
+// Get All Places
+export const showPlaceByKey = (req, res) => {
+    if (req.params.key == "all") {
+        getPlaceAddress((err, results) => {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    } else if (req.params.key == "desc") {
+        getPlaceDesc((err, results) => {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    } else if (req.params.key == "asc") {
+        getPlaceAsc((err, results) => {
+            if (err) {
+                res.send(err);
+            } else {
+                res.json(results);
+            }
+        });
+    }
 }
 
 // Get Single Place 
@@ -23,8 +52,8 @@ export const showPlaceById = (req, res) => {
 }
 
 // Get Place by status
-export const showPlaceByStatus = (req, res) => {
-    getPlaceByStatus((err, results) => {
+export const showPlaceBySearch = (req, res) => {
+    getPlaceBySearch(req.params.key, (err, results) => {
         if (err) {
             res.send(err);
         } else {
@@ -42,6 +71,11 @@ export const showPlaceByOwner = (req, res) => {
             res.json(results);
         }
     });
+}
+
+// Get Place by Owner
+export const showImage = (req, res) => {
+    res.send('/image/1.jpg')
 }
 
 // Create New Place

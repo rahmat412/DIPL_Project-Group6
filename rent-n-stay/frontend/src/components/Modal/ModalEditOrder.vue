@@ -28,9 +28,10 @@
                   type="text"
                   class="disabled border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="ID"
-                  v-model="uid"
+                  v-model="state.id"
                   disabled
                 />
+                <span v-if="v$.id.$error" class="text-sm px-2 text-red-500">{{v$.id.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -41,7 +42,7 @@
                   Client Name
                 </label>
                 <select 
-                  v-model="uclientid"
+                  v-model="state.clientid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
                   <option
@@ -51,6 +52,7 @@
                     {{client.clientID}} - {{ client.clientName }}
                   </option>
                 </select>
+                <span v-if="v$.clientid.$error" class="text-sm px-2 text-red-500">{{v$.clientid.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -61,7 +63,7 @@
                   Place Name
                 </label>
                 <select 
-                  v-model="uplaceid"
+                  v-model="state.placeid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
                   <option
@@ -71,6 +73,7 @@
                     {{place.placeID}} - {{ place.placeName }}
                   </option>
                 </select>
+                <span v-if="v$.placeid.$error" class="text-sm px-2 text-red-500">{{v$.placeid.$errors[0].$message}}</span>
               </div>
 
               <div class="text-center relative w-full mb-3">
@@ -82,11 +85,12 @@
                 </label>
                 <v-date-picker
                   color="green"
-                  v-model="range"
+                  v-model="state.range"
                   :min-date='new Date()'
                   is-range
                   is-expanded
                   />
+                <span v-if="v$.range.$error" class="text-sm px-2 text-red-500">{{v$.range.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -97,7 +101,7 @@
                   Status
                 </label>
                 <select 
-                  v-model="ustatus"
+                  v-model="state.status"
                   placeholder="Select Owner"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
@@ -108,6 +112,7 @@
                     {{stat}}
                   </option>
                 </select>
+                <span v-if="v$.status.$error" class="text-sm px-2 text-red-500">{{v$.status.$errors[0].$message}}</span>
               </div>
 
               <div class="text-center mt-6">
@@ -128,20 +133,45 @@
   </transition>
 </template>
 <script>
+import useValidate from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
+import Swal from 'sweetalert2';
 import axios from "axios";
 export default {
+  setup(){
+    const state = reactive ({
+      id: "",
+      placeid: "",
+      clientid: "",
+      status: "",
+      range: {
+        start: "",
+        end: "",
+      },
+    })
+    const rules = computed(() => {
+      return {
+        id: { required },
+        placeid: { required },
+        clientid: { required },
+        status: { required },
+        range: {
+          start: { required },
+          end: { required },
+        },
+      }
+    })
+    const v$ = useValidate(rules,state)
+    return {
+      state,
+      v$,
+    }
+  },
   data() {
     return {
-      uid: "",
-      uplaceid: "",
-      uclientid: "",
-      range: {
-        start: new Date(),
-        end: new Date(),
-      },
       clients:{},
       places:{},
-      ustatus:"",
       stats:['Requested','Accepted','Declined','Cancelled','In Progress','Completed']
     };
   },
@@ -157,12 +187,12 @@ export default {
         axios.get(
           'http://localhost:5000/order/'+this.id
         ).then((response) => {
-          this.uid = response.data.orderID;
-          this.uclientid = response.data.clientID;
-          this.uplaceid = response.data.placeID;
-          this.range.start = response.data.orderCheckIn;
-          this.range.end = response.data.orderCheckOut;
-          this.ustatus = response.data.orderStatus;
+          this.state.id = response.data.orderID;
+          this.state.clientid = response.data.clientID;
+          this.state.placeid = response.data.placeID;
+          this.state.range.start = response.data.orderCheckIn;
+          this.state.range.end = response.data.orderCheckOut;
+          this.state.status = response.data.orderStatus;
         })
       } catch (err) {
         console.log(err);
@@ -185,24 +215,39 @@ export default {
       }
     },
     async editOrder() {
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      }
       try {
         await axios.put('http://localhost:5000/order/'+this.id,
           {
-            client_id: this.uclientid,
-            place_id: this.uplaceid,
-            order_date: new Date(),
-            order_checkin: this.range.start,
-            order_checkout: this.range.end,
-            order_status: this.ustatus
+            client_id: this.state.clientid,
+            place_id: this.state.placeid,
+            order_checkin: this.state.range.start,
+            order_checkout: this.state.range.end,
+            order_status: this.state.status
           }
         );
-        this.$router.go()
+        this.sAlert("success","Yeay..","Editing Order Success");
+        this.close();
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Editing Order Failed");
       }
+    },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
     },
     close() {
       this.$emit('close');
+      this.$router.go();
     },
   },
 };

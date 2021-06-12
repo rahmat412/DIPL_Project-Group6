@@ -30,10 +30,11 @@
                 <input
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                  placeholder="Street"
-                  v-model="uid"
+                  placeholder="ID"
+                  v-model="state.id"
                   disabled
                 />
+                <span v-if="v$.id.$error" class="text-left block text-sm px-2 text-red-500">{{v$.id.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -44,7 +45,7 @@
                   Place Name
                 </label>
                 <select 
-                  v-model="uplaceid"
+                  v-model="state.placeid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
                   <option
@@ -54,6 +55,7 @@
                     {{place.placeID}} - {{ place.placeName }}
                   </option>
                 </select>
+                <span v-if="v$.placeid.$error" class="text-left block text-sm px-2 text-red-500">{{v$.placeid.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -67,8 +69,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Street"
-                  v-model="ustreet"
+                  v-model="state.street"
                 />
+                <span v-if="v$.street.$error" class="text-left block text-sm px-2 text-red-500">{{v$.street.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -82,8 +85,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="District"
-                  v-model="udistrict"
+                  v-model="state.district"
                 />
+                <span v-if="v$.district.$error" class="text-left block text-sm px-2 text-red-500">{{v$.district.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -97,8 +101,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Regency"
-                  v-model="uregency"
+                  v-model="state.regency"
                 />
+                <span v-if="v$.regency.$error" class="text-left block text-sm px-2 text-red-500">{{v$.regency.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -112,8 +117,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Postcode"
-                  v-model="upostcode"
+                  v-model="state.postcode"
                 />
+                <span v-if="v$.postcode.$error" class="text-left block text-sm px-2 text-red-500">{{v$.postcode.$errors[0].$message}}</span>
               </div>
 
               <div class="text-center mt-6">
@@ -134,16 +140,39 @@
   </transition>
 </template>
 <script>
+import useValidate from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
+import Swal from 'sweetalert2';
 import axios from "axios";
 export default {
+  setup(){
+    const state = reactive ({
+      id: "",
+      placeid: "",
+      street: "",
+      district: "",
+      regency: "",
+      postcode: "",
+    })
+    const rules = computed(() => {
+      return {
+        id: { required },
+        placeid: { required },
+        street: { required },
+        district: { required},
+        regency: { required },
+        postcode: { required },
+      }
+    })
+    const v$ = useValidate(rules,state)
+    return {
+      state,
+      v$,
+    }
+  },
   data() {
     return {
-      uid:"",
-      uplaceid:"",
-      ustreet:"",
-      udistrict:"",
-      uregency:"",
-      upostcode:"",
       places:{}
     };
   },
@@ -158,12 +187,12 @@ export default {
         await axios.get(
           'http://localhost:5000/address/'+this.id
         ).then((response) => {
-          this.uid = response.data.addressID;
-          this.uplaceid = response.data.placeID;
-          this.ustreet = response.data.addressStreet;
-          this.udistrict = response.data.addressDistrict;
-          this.uregency = response.data.addressRegency;
-          this.upostcode = response.data.addressPostcode;
+          this.state.id = response.data.addressID;
+          this.state.placeid = response.data.placeID;
+          this.state.street = response.data.addressStreet;
+          this.state.district = response.data.addressDistrict;
+          this.state.regency = response.data.addressRegency;
+          this.state.postcode = response.data.addressPostcode;
         })
       } catch (err) {
         console.log(err);
@@ -178,23 +207,39 @@ export default {
       }
     },
     async editAddress() {
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      } 
       try {
         await axios.put('http://localhost:5000/address/'+this.id,
           {
-            place_id: this.uplaceid,
-            address_street: this.ustreet,
-            address_district: this.udistrict,
-            address_regency: this.uregency,
-            address_postcode: this.upostcode,
+            place_id: this.state.placeid,
+            address_street: this.state.street,
+            address_district: this.state.district,
+            address_regency: this.state.regency,
+            address_postcode: this.state.postcode,
           }
         );
-        this.$router.go()
+        this.sAlert("success","Yeay..","Editing Address Success");
+        this.close();
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Editing Address Failed");
       }
+    },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
     },
     close() {
       this.$emit('close');
+      this.$router.go();
     },
   },
 };

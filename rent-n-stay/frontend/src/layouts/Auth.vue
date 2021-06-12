@@ -29,5 +29,15 @@ export default {
     Navbar,
     FooterSmall,
   },
+  created() {
+    this.redir();
+  },
+  methods : {
+    redir(){
+      if (localStorage.getItem('jwt') != null){
+        this.$router.push("/")
+      }
+    },
+  }
 };
 </script>

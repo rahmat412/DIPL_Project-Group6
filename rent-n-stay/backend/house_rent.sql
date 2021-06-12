@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 05, 2021 at 01:24 PM
+-- Generation Time: Jun 07, 2021 at 07:10 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.3
 
@@ -33,9 +33,16 @@ CREATE TABLE `address` (
   `placeID` varchar(11) NOT NULL,
   `addressStreet` varchar(50) NOT NULL,
   `addressDistrict` varchar(50) NOT NULL,
-  `addressRegion` varchar(50) NOT NULL,
+  `addressRegency` varchar(50) NOT NULL,
   `addressPostcode` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `address`
+--
+
+INSERT INTO `address` (`addressID`, `placeID`, `addressStreet`, `addressDistrict`, `addressRegency`, `addressPostcode`) VALUES
+('0ixsrptdmas', '5584hmziaug', 'Jl. Komplek PBB', 'Dayeuhkolot', 'Bandung', '40257');
 
 -- --------------------------------------------------------
 
@@ -95,21 +102,35 @@ CREATE TABLE `facility` (
   `facilityType` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `facility`
+--
+
+INSERT INTO `facility` (`facilityID`, `placeID`, `facilityName`, `facilityType`) VALUES
+('siq7w69crg', '5584hmziaug', 'Bed', 'Room Facility');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `order`
+-- Table structure for table `orders`
 --
 
-CREATE TABLE `order` (
+CREATE TABLE `orders` (
   `orderID` varchar(11) NOT NULL,
   `placeID` varchar(11) NOT NULL,
   `clientID` varchar(11) NOT NULL,
   `orderDate` date NOT NULL,
   `orderCheckIn` date NOT NULL,
   `orderCheckOut` date NOT NULL,
-  `orderStatus` varchar(200) NOT NULL
+  `orderStatus` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `orders`
+--
+
+INSERT INTO `orders` (`orderID`, `placeID`, `clientID`, `orderDate`, `orderCheckIn`, `orderCheckOut`, `orderStatus`) VALUES
+('pftr6b0wqm', '5584hmziaug', 'wtws271578r', '2021-06-07', '2021-06-07', '2021-06-14', 'Requested');
 
 -- --------------------------------------------------------
 
@@ -130,7 +151,8 @@ CREATE TABLE `owner` (
 --
 
 INSERT INTO `owner` (`ownerID`, `ownerEmail`, `ownerName`, `ownerPassword`, `ownerPhone`) VALUES
-('5584hmziauf', 'budi@gmail.com', 'budi', 'budiman', '0822334455');
+('5584hmziauf', 'budi@gmail.com', 'budi', 'budiman', '0822334455'),
+('cfpw8rqnwav', 'jaka@gmail.com', 'jaka', 'jakarta', '0832432123');
 
 -- --------------------------------------------------------
 
@@ -143,9 +165,16 @@ CREATE TABLE `place` (
   `ownerID` varchar(11) NOT NULL,
   `placeName` varchar(200) NOT NULL,
   `placePrice` int(11) NOT NULL,
-  `placeCategory` varchar(100) NOT NULL,
-  `placeStatus` varchar(20) NOT NULL
+  `placeCategory` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `place`
+--
+
+INSERT INTO `place` (`placeID`, `ownerID`, `placeName`, `placePrice`, `placeCategory`) VALUES
+('2ctgjam41b7', 'cfpw8rqnwav', '7 Days', 2000000, 'Apartment'),
+('5584hmziaug', '5584hmziauf', 'Kontrakan PBB H14', 1000000, 'Boarding House');
 
 --
 -- Indexes for dumped tables
@@ -155,7 +184,8 @@ CREATE TABLE `place` (
 -- Indexes for table `address`
 --
 ALTER TABLE `address`
-  ADD PRIMARY KEY (`addressID`);
+  ADD PRIMARY KEY (`addressID`),
+  ADD KEY `fk_address_place` (`placeID`);
 
 --
 -- Indexes for table `admin`
@@ -177,9 +207,9 @@ ALTER TABLE `facility`
   ADD KEY `fk_place_facility` (`placeID`);
 
 --
--- Indexes for table `order`
+-- Indexes for table `orders`
 --
-ALTER TABLE `order`
+ALTER TABLE `orders`
   ADD PRIMARY KEY (`orderID`),
   ADD KEY `FK_client_order` (`clientID`),
   ADD KEY `FK_place_order` (`placeID`);
@@ -202,15 +232,21 @@ ALTER TABLE `place`
 --
 
 --
+-- Constraints for table `address`
+--
+ALTER TABLE `address`
+  ADD CONSTRAINT `fk_address_place` FOREIGN KEY (`placeID`) REFERENCES `place` (`placeID`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `facility`
 --
 ALTER TABLE `facility`
   ADD CONSTRAINT `fk_place_facility` FOREIGN KEY (`placeID`) REFERENCES `place` (`placeID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `order`
+-- Constraints for table `orders`
 --
-ALTER TABLE `order`
+ALTER TABLE `orders`
   ADD CONSTRAINT `FK_client_order` FOREIGN KEY (`clientID`) REFERENCES `client` (`clientID`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `FK_place_order` FOREIGN KEY (`placeID`) REFERENCES `place` (`placeID`) ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -218,7 +254,7 @@ ALTER TABLE `order`
 -- Constraints for table `place`
 --
 ALTER TABLE `place`
-  ADD CONSTRAINT `FK_owner_place` FOREIGN KEY (`ownerID`) REFERENCES `address` (`addressID`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `FK_owner_place` FOREIGN KEY (`ownerID`) REFERENCES `owner` (`ownerID`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

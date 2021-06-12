@@ -70,6 +70,14 @@
               :class="[
                 'bg-emerald-800 text-emerald-300 border-emerald-700',
               ]"
+            >
+              Place Image
+            </th>
+            <th
+              class="px-6 align-middle border border-solid py-3 text-xs uppercase border-l-0 border-r-0 whitespace-nowrap font-semibold text-left"
+              :class="[
+                'bg-emerald-800 text-emerald-300 border-emerald-700',
+              ]"
             ></th>
           </tr>
         </thead>
@@ -99,6 +107,11 @@
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
             >
               {{place.placeCategory}}
+            </td>
+            <td
+              class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4"
+            >
+              {{place.placeImage}}
             </td>
             <td
               class="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-right"

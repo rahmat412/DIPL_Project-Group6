@@ -6,7 +6,7 @@ import { showAdmin, showAdminById, createAdmin, updateAdmin, deleteAdmin } from 
 import { showOwner, showOwnerById, createOwner, updateOwner, deleteOwner } from "../controllers/owner_c.js";
 import { showClient, showClientById, createClient, updateClient, deleteClient } from "../controllers/client_c.js";
 import { showOrder, showOrderById, showOrderActiveByClient, showOrderActiveByOwner, showOrderHistoryByClient, showOrderHistoryByOwner, createOrder, updateOrder, updateOrderStatus, deleteOrder } from "../controllers/order_c.js";
-import { showPlace, showPlaceById, showPlaceByOwner, showPlaceByStatus, createPlace, updatePlace, deletePlace } from "../controllers/place_c.js";
+import { showPlace, showPlaceById, showPlaceByOwner, showPlaceBySearch, createPlace, updatePlace, deletePlace, showPlaceByKey } from "../controllers/place_c.js";
 import { showFacility, showFacilityById, showFacilityByPlace, createFacility, updateFacility, deleteFacility } from "../controllers/facility_c.js";
 import { showAddress, showAddressById, showAddressByPlace, createAddress, updateAddress, deleteAddress } from "../controllers/address_c.js";
 import { register, login, logout } from "../controllers/auth_c.js";
@@ -17,6 +17,15 @@ const router = express.Router();
 
 router.use(express.urlencoded({ extended: false }));
 router.use(express.json());
+
+import multer from "multer";
+const upload = multer({
+    dest: './image'
+});
+
+router.post('/upload', upload.single('file'), (req, res) => {
+    res.json(req.file)
+});
 
 // register
 router.post('/register', register);
@@ -75,6 +84,8 @@ router.delete('/client/:id', deleteClient);
 // Get All Place
 router.get('/place', showPlace);
 
+router.get('/placeKey/:key', showPlaceByKey);
+
 // Get Single Place
 router.get('/place/:id', showPlaceById);
 
@@ -82,7 +93,7 @@ router.get('/place/:id', showPlaceById);
 router.get('/placeOwner/:id', showPlaceByOwner);
 
 // Get Place by status
-router.get('/placeStatus/:id', showPlaceByStatus);
+router.get('/placeSearch/:key', showPlaceBySearch);
 
 // Create New Place
 router.post('/place', createPlace);

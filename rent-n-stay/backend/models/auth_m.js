@@ -5,7 +5,7 @@ export const insertClient = (data, result) => {
     db.query("INSERT INTO client SET ?", [data], (err, results) => {
         if (err) {
             console.log(err);
-            result(err, null);
+            result("Email has been registered", null);
         } else {
             result(null, results);
         }

@@ -25,8 +25,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Name"
-                  v-model="uname"
+                  v-model="state.name"
                 />
+                <span v-if="v$.name.$error" class="text-sm px-2 text-red-500">{{v$.name.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -40,8 +41,9 @@
                   type="email"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Email"
-                  v-model="uemail"
+                  v-model="state.email"
                 />
+                <span v-if="v$.email.$error" class="text-sm px-2 text-red-500">{{v$.email.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -55,8 +57,9 @@
                   type="password"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Password"
-                  v-model="upassword"
+                  v-model="state.password"
                 />
+                <span v-if="v$.password.$error" class="text-sm px-2 text-red-500">{{v$.password.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -70,8 +73,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Phone Number"
-                  v-model="uphone"
+                  v-model="state.phone"
                 />
+                <span v-if="v$.phone.$error" class="text-sm px-2 text-red-500">{{v$.phone.$errors[0].$message}}</span>
               </div>
 
               <div class="text-center mt-6">
@@ -85,12 +89,7 @@
               </div>
             </form>
             <div class="flex flex-wrap mt-6 relative">
-              <div class="w-1/2">
-                <a href="javascript:void(0)" class="text-blueGray-200">
-              
-                </a>
-              </div>
-              <div class="w-1/2 text-right">
+              <div class="w-full text-right">
                 <small>Already have an account? </small>
                 <router-link to="/auth/login" class="text-blueGray-600 font-bold">
                   <small>Log in</small>
@@ -104,32 +103,64 @@
   </div>
 </template>
 <script>
+import useValidate from '@vuelidate/core';
+import { required, email, minLength } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
+import Swal from 'sweetalert2';
 import axios from 'axios';
 export default {
-  data() {
+  setup(){
+    const state = reactive ({
+      name: "",
+      email: "",
+      password: "",
+      phone: "",
+    })
+    const rules = computed(() => {
+      return {
+        name: { required },
+        email: { required, email },
+        password: { required, minLength: minLength(6) },
+        phone: { required },
+      }
+    })
+    const v$ = useValidate(rules,state)
     return {
-      uname: "",
-      uemail: "",
-      upassword: "",
-      uphone: "",
-    };
+      state,
+      v$,
+    }
   },
   methods: {
     // Create New account
     async register() {
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      }   
       try {
         await axios.post("http://localhost:5000/register", {
           clientID: Math.random().toString(36).substring(2),
-          clientName: this.uname,
-          clientEmail: this.uemail,
-          clientPassword: this.upassword,
-          clientPhone: this.uphone,
+          clientName: this.state.name,
+          clientEmail: this.state.email,
+          clientPassword: this.state.password,
+          clientPhone: this.state.phone,
         });
+        this.sAlert("success","Yeay..","Register Success")
         this.$router.push("/auth/login");
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","The email has been registered")
       }
     },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
   },
 };
 </script>

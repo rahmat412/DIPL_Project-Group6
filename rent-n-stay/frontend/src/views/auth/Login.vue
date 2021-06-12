@@ -26,8 +26,9 @@
                   type="email"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Email"
-                  v-model="email"
+                  v-model="state.email"
                 />
+                <span v-if="v$.email.$error" class="text-sm px-2 text-red-500">{{v$.email.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -41,8 +42,9 @@
                   type="password"
                   class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Password"
-                  v-model="password"
+                  v-model="state.password"
                 />
+                <span v-if="v$.password.$error" class="text-sm px-2 text-red-500">{{v$.password.$errors[0].$message}}</span>
               </div>
               <div class="text-center mt-6">
                 <button
@@ -55,16 +57,12 @@
               </div>
             </form>
             <div class="flex flex-wrap mt-6 relative">
-              <div class="w-1/2">
-                <a href="javascript:void(0)" class="text-blueGray-200">
-              
-                </a>
-              </div>
-              <div class="w-1/2 text-right">
+              <div class="w-full text-right">
                 <small>Don't have an account? </small>
                 <router-link to="/auth/register" class="text-blueGray-600 font-bold">
                   <small>Register</small>
                 </router-link>
+                
               </div>
             </div>
           </div>
@@ -74,46 +72,70 @@
   </div>
 </template>
 <script>
+import useValidate from '@vuelidate/core';
+import { required, email, minLength } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
 import axios from "axios";
+import Swal from 'sweetalert2';
 export default {
-  data(){
+  setup(){
+    const state = reactive ({
+      email: "",
+      password: "",
+    })
+    const rules = computed(() => {
+      return {
+        email: { required, email },
+        password: { required, minLength: minLength(6) },
+      }
+    })
+    const v$ = useValidate(rules,state)
     return {
-      email : "",
-      password : "",
+      state,
+      v$,
     }
   },
   methods : {
-    LogIn: function() {
-      axios.post("http://localhost:5000/login", {
-        email: this.email,
-        password: this.password
-      })
-      .then(response => {   
-        let role = response.data.role;
-        localStorage.setItem('user',response.data.user);
-        localStorage.setItem('role',response.data.role);
-        localStorage.setItem('jwt',response.data.token);
-        if (localStorage.getItem('jwt') != null){
-          this.$emit('loggedIn')
-          if(this.$route.params.nextUrl != null){
-            this.$router.push(this.$route.params.nextUrl);
+    async LogIn (){
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      }
+      try{
+        await axios.post("http://localhost:5000/login", {
+          email: this.state.email,
+          password: this.state.password
+        })
+        .then(response => {   
+          let role = response.data.role;
+          localStorage.setItem('user',response.data.user);
+          localStorage.setItem('role',response.data.role);
+          localStorage.setItem('jwt',response.data.token);
+          this.sAlert("success","Success","Login Success")
+          if(role == 1){
+            this.$router.push("/admin");
+          } else if(role == 2){
+            this.$router.push("/profile");
+          } else if(role == 3){
+            this.$router.push("/profile");
           } else {
-            if(role == 1){
-              this.$router.push("/admin");
-            } else if(role == 2){
-              this.$router.push("/profile");
-            } else if(role == 3){
-              this.$router.push("/profile");
-            } else {
-              this.$router.push("/admin");
-            }
+            this.$router.push("/admin");
           }
-        }
-      })
-      .catch(function (error) {          
-        console.error(error.response);
-      });
+        })
+      } catch (err) {
+        console.log(err);
+        this.sAlert("error","Login Failed","Invalid Email or Password")
+      }
     },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
   },
 };
 </script>

@@ -23,6 +23,8 @@ app.use(express.json());
 // use cors
 app.use(cors());
 
+app.use(express.static('image'));
+
 // use router
 app.use(Router);
 

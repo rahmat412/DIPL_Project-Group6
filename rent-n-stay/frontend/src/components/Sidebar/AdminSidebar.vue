@@ -83,7 +83,7 @@
         <h6
           class="md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline"
         >
-          Database
+          Admin Menu
         </h6>
         <!-- Navigation -->
 
@@ -335,6 +335,15 @@
             >
               <i class="fas fa-user-circle text-blueGray-300 mr-2 text-sm"></i>
               Profile Page
+            </router-link>
+          </li>
+          <li class="items-center">
+            <router-link
+              class="text-blueGray-700 hover:text-blueGray-500 text-xs uppercase py-3 font-bold block"
+              to="/places"
+            >
+              <i class="fas fa-search text-blueGray-300 mr-2 text-sm"></i>
+              Search Places Page
             </router-link>
           </li>
         </ul>

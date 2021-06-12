@@ -17,8 +17,10 @@ import Register from "@/views/auth/Register.vue";
 // views without layouts
 import Landing from "@/views/Landing.vue";
 import Profile from "@/views/Profile.vue";
+import SearchPlace from "@/views/SearchPlace.vue";
 import Home from "@/views/Index.vue";
 import indexTemp from "@/views/Index_temp.vue";
+import alert from "@/views/alert.vue";
 
 // admin menu
 import Admin from "@/layouts/Admin.vue";
@@ -123,6 +125,9 @@ const router = createRouter({
             path: "/temp",
             component: indexTemp,
         }, {
+            path: "/places",
+            component: SearchPlace,
+        }, {
             path: "/profile",
             component: Profile,
             beforeEnter: requireAuth,
@@ -130,57 +135,55 @@ const router = createRouter({
                 roles: 'client'
             }
         }, {
+            path: "/alert",
+            component: alert,
+        }, {
             path: "/",
             component: Home,
         },
-        { path: "/:pathMatch(.*)*", redirect: "/" },
+        { path: "/:pathMatch(.*)*", redirect: "/alert" },
     ]
 });
 
 function requireAuth(to, from, next) {
     function proceed() {
-        if (localStorage.getItem('jwt') != null) {
-            if (localStorage.getItem('role') != null) {
-                switch (to.meta.roles) {
-                    case 'client':
+        if (localStorage.getItem('role') != null) {
+            switch (to.meta.roles) {
+                case 'client':
+                    next();
+                    break;
+                case 'owner':
+                    if (localStorage.getItem('role') <= 2) {
                         next();
-                        break;
-                    case 'owner':
-                        if (localStorage.getItem('role') <= 2) {
-                            next();
-                        } else {
-                            next({ component: Home });
-                        }
-                        break;
-                    case 'admin':
-                        if (localStorage.getItem('role') <= 1) {
-                            next();
-                        } else {
-                            next({ component: Home });
-                        }
-                        break;
-                    case 'super-admin':
-                        if (localStorage.getItem('role') <= 0) {
-                            next();
-                        } else {
-                            next({ component: Home });
-                        }
-                        break;
-                    default:
-                        next({ component: Home });
-                        break;
-                }
-            } else {
-                next({ component: Home });
+                    } else {
+                        next({ path: '/alert' });
+                    }
+                    break;
+                case 'admin':
+                    if (localStorage.getItem('role') <= 1) {
+                        next();
+                    } else {
+                        next({ path: '/alert' });
+                    }
+                    break;
+                case 'super-admin':
+                    if (localStorage.getItem('role') <= 0) {
+                        next();
+                    } else {
+                        next({ path: '/alert' });
+                    }
+                    break;
+                default:
+                    next({ path: '/alert' });
+                    break;
             }
         } else {
-            next({ component: Home });
+            next({ path: '/alert' });
         }
     }
     if (localStorage.getItem('jwt') == null) {
         next({
-            path: '/auth/login',
-            params: { nextUrl: to.fullPath }
+            path: '/auth/login'
         })
     } else {
         proceed();

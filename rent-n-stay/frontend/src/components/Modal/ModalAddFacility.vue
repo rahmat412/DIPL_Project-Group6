@@ -28,7 +28,7 @@
                   Place Name
                 </label>
                 <select 
-                  v-model="uplaceid"
+                  v-model="state.placeid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
                   <option
@@ -38,6 +38,7 @@
                     {{place.placeID}} - {{ place.placeName }}
                   </option>
                 </select>
+                <span v-if="v$.placeid.$error" class="text-left block text-sm px-2 text-red-500">{{v$.placeid.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -51,8 +52,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Facility Name"
-                  v-model="uname"
+                  v-model="state.name"
                 />
+                <span v-if="v$.name.$error" class="text-left block text-sm px-2 text-red-500">{{v$.name.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -63,7 +65,7 @@
                   Facility Type
                 </label>
                 <select 
-                  v-model="utype"
+                  v-model="state.type"
                   placeholder="Select Owner"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
@@ -74,6 +76,7 @@
                     {{type}}
                   </option>
                 </select>
+                <span v-if="v$.type.$error" class="text-left block text-sm px-2 text-red-500">{{v$.type.$errors[0].$message}}</span>
               </div>
 
               <div class="text-center mt-6">
@@ -94,13 +97,33 @@
   </transition>
 </template>
 <script>
+import useValidate from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
+import Swal from 'sweetalert2';
 import axios from "axios";
-export default {  
+export default {
+  setup(){
+    const state = reactive ({
+      placeid: "",
+      name: "",
+      type: "",
+    })
+    const rules = computed(() => {
+      return {
+        placeid: { required },
+        name: { required },
+        type: { required },
+      }
+    })
+    const v$ = useValidate(rules,state)
+    return {
+      state,
+      v$,
+    }
+  },
   data() {
     return {
-      uplaceid:"",
-      uname: "",
-      utype: "",
       types:["Room Facility","General Facility","Parking Facility",],
       places:{}
     };
@@ -111,16 +134,22 @@ export default {
   methods: {
     // add new Facility
     async addFacility() {
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      } 
       try {
         await axios.post("http://localhost:5000/facility", {
           facilityID: Math.random().toString(36).substring(2),
-          placeID: this.uplaceid,
-          facilityName: this.uname,
-          facilityType: this.utype,
+          placeID: this.state.placeid,
+          facilityName: this.state.name,
+          facilityType: this.state.type,
         });
-        this.$router.go();
+        this.sAlert("success","Yeay..","Adding Facility Success");
+        this.close();
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Adding Facility Failed");
       }
     },
     async getPlaces() {
@@ -131,8 +160,18 @@ export default {
         console.log(err);
       }
     },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
+    },
     close() {
       this.$emit('close');
+      this.$router.go();
     },
   },
 };

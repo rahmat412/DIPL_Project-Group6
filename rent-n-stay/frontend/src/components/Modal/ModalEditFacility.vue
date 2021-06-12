@@ -28,9 +28,10 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Facility ID"
-                  v-model="uid"
+                  v-model="state.id"
                   disabled
                 />
+                <span v-if="v$.id.$error" class="text-left block text-sm px-2 text-red-500">{{v$.id.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -41,7 +42,7 @@
                   Place Name
                 </label>
                 <select 
-                  v-model="uplaceid"
+                  v-model="state.placeid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
                   <option
@@ -51,6 +52,7 @@
                     {{place.placeID}} - {{ place.placeName }}
                   </option>
                 </select>
+                <span v-if="v$.placeid.$error" class="text-left block text-sm px-2 text-red-500">{{v$.placeid.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -64,8 +66,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Facility Name"
-                  v-model="uname"
+                  v-model="state.name"
                 />
+                <span v-if="v$.name.$error" class="text-left block text-sm px-2 text-red-500">{{v$.name.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -76,7 +79,7 @@
                   Facility Type
                 </label>
                 <select 
-                  v-model="utype"
+                  v-model="state.type"
                   placeholder="Select Owner"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
@@ -87,6 +90,7 @@
                     {{type}}
                   </option>
                 </select>
+                <span v-if="v$.type.$error" class="text-left block text-sm px-2 text-red-500">{{v$.type.$errors[0].$message}}</span>
               </div>
 
               <div class="text-center mt-6">
@@ -107,13 +111,35 @@
   </transition>
 </template>
 <script>
+import useValidate from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
+import Swal from 'sweetalert2';
 import axios from "axios";
 export default {
+  setup(){
+    const state = reactive ({
+      id: "",
+      placeid: "",
+      name: "",
+      type: "",
+    })
+    const rules = computed(() => {
+      return {
+        id: { required },
+        placeid: { required },
+        name: { required },
+        type: { required },
+      }
+    })
+    const v$ = useValidate(rules,state)
+    return {
+      state,
+      v$,
+    }
+  },
   data() {
     return {
-      uplaceid:"",
-      uname: "",
-      utype: "",
       types:["Room Facility","General Facility","Parking Facility"],
       places:{}
     };
@@ -129,10 +155,10 @@ export default {
         await axios.get(
           'http://localhost:5000/facility/'+this.id
         ).then((response) => {
-          this.uid = response.data.facilityID;
-          this.uplaceid = response.data.placeID;
-          this.uname = response.data.facilityName;
-          this.utype = response.data.facilityType;
+          this.state.id = response.data.facilityID;
+          this.state.placeid = response.data.placeID;
+          this.state.name = response.data.facilityName;
+          this.state.type = response.data.facilityType;
         })
       } catch (err) {
         console.log(err);
@@ -147,21 +173,37 @@ export default {
       }
     },
     async editFacility() {
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      } 
       try {
         await axios.put('http://localhost:5000/facility/'+this.id,
           {
-            place_id: this.uplaceid,
-            name: this.uname,
-            type: this.utype,
+            place_id: this.state.placeid,
+            name: this.state.name,
+            type: this.state.type,
           }
         );
-        this.$router.go()
+        this.sAlert("success","Yeay..","Editing Place Success")
+        this.close();
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Editing Place Failed")
       }
+    },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
     },
     close() {
       this.$emit('close');
+      this.$router.go();
     },
   },
 };

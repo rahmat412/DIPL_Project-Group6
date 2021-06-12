@@ -28,81 +28,53 @@
           <i class="fas fa-bars"></i>
         </button>
       </div>
-      <div>
-        <div
-          class="lg:flex flex-grow items-center"
-          :class="[navbarOpen ? 'block' : 'hidden']"
-          id="example-navbar-warning"
-        >
-      </div>
-      
-       
+      <div
+        class="lg:flex flex-grow items-center"
+        :class="[navbarOpen ? 'block' : 'hidden']"
+        id="example-navbar-warning"
+      >
         <ul class="flex flex-col lg:flex-row list-none lg:ml-auto">
           <div v-if=is_admin>
             <li class="flex items-center">
               <index-dropdown />
             </li>
           </div>
+          
           <div>
-            <li class="flex items-center">
+            <li class="flex items-center ">
               <router-link to="/" class="text-blueGray-600 font-bold">
                 <a
-                  class="bg-blueGray-700 text-white active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
+                  class="hover:text-blueGray-500 text-blueGray-700 px-3 py-3 flex items-center text-s uppercase font-bold"
                   target="_blank"
                 >
-                  Help
-                </a>
-              </router-link>
-            </li>
-          </div>
-          <div>
-            <li class="flex items-center">
-              <router-link to="/" class="text-blueGray-600 font-bold">
-                <a
-                  class="bg-blueGray-700 text-white active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
-                  target="_blank"
-                >
-                  About
-                </a>
-              </router-link>
-            </li>
-          </div>
-          <div v-if="isLoggedIn">
-            <li class="flex items-center">
-              <router-link to="/profile" class="text-blueGray-600 font-bold">
-                <a
-                  class="bg-blueGray-700 text-white active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
-                  target="_blank"
-                >
-                  My Profile
-                </a>
-              </router-link>
-            </li>
-          </div>
-          <div v-if="isLoggedIn">
-            <li class="flex items-center">
-              <router-link to="/auth/login" class="text-blueGray-600 font-bold">
-                <a
-                  @click="LogOut"
-                  class="bg-red-700 text-white active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
-                  target="_blank"
-                >
-                  Log Out
+                  Home
                 </a>
               </router-link>
             </li>
           </div>
 
-          <div v-else>
-            <li class="flex items-center">
-              <router-link to="/auth/login" class="text-blueGray-600 font-bold">
+          <div>
+            <li class="flex items-center ">
+              <router-link to="/places" class="text-blueGray-600 font-bold">
                 <a
-                  class="bg-blueGray-700 text-white active:bg-blueGray-50 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3 ease-linear transition-all duration-150"
+                  class="hover:text-blueGray-500 text-blueGray-700 px-3 py-3 flex items-center text-s uppercase font-bold"
                   target="_blank"
                 >
-                  Log in
+                  Rent
                 </a>
               </router-link>
+            </li>
+          </div>
+
+          <div v-if="isLoggedIn">
+            <li class="flex items-center ">
+              <user-dropdown />
+            </li>
+          </div>
+
+          <div v-else>
+            <li class="flex items-center">
+              <auth-dropdown/>
             </li>
           </div>
         </ul>
@@ -113,6 +85,8 @@
 
 <script>
 import IndexDropdown from "@/components/Dropdowns/IndexDropdown.vue";
+import UserDropdown from "@/components/Dropdowns/UserDropdown.vue";
+import AuthDropdown from "@/components/Dropdowns/AuthDropdown.vue";
 import RnS from "@/assets/img/rns_2.png";
 
 export default {
@@ -138,6 +112,8 @@ export default {
   },
   components: {
     IndexDropdown,
+    UserDropdown,
+    AuthDropdown
   },
 };
 </script>

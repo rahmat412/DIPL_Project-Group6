@@ -44,6 +44,7 @@
 <script>
 import { createPopper } from "@popperjs/core";
 import ModalEdit from '@/components/Modal/ModalEditOrder.vue';
+import Swal from 'sweetalert2';
 import axios from "axios";
 export default {
   data() {
@@ -78,10 +79,20 @@ export default {
     async deleteOrder(id) {
       try {
         await axios.delete(`http://localhost:5000/order/${id}`);
-        this.getOrders();
+        this.sAlert("success","Yeay..","Deleting Order Success");
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Deleting Order Failed");
       }
+    },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 2000
+      });
     },
   },
 };

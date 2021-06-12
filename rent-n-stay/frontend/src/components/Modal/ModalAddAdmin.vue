@@ -31,8 +31,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Name"
-                  v-model="uname"
+                  v-model="state.name"
                 />
+                <span v-if="v$.name.$error" class="text-left block text-sm px-2 text-red-500">{{v$.name.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -46,8 +47,9 @@
                   type="email"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Email"
-                  v-model="uemail"
+                  v-model="state.email"
                 />
+                <span v-if="v$.email.$error" class="text-left block text-sm px-2 text-red-500">{{v$.email.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -61,8 +63,9 @@
                   type="password"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Password"
-                  v-model="upassword"
+                  v-model="state.password"
                 />
+                <span v-if="v$.password.$error" class="text-left block text-sm px-2 text-red-500">{{v$.password.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -76,8 +79,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Phone Number"
-                  v-model="uphone"
+                  v-model="state.phone"
                 />
+                <span v-if="v$.phone.$error" class="text-left block text-sm px-2 text-red-500">{{v$.phone.$errors[0].$message}}</span>
               </div>
 
               <div class="text-center mt-6">
@@ -98,19 +102,40 @@
   </transition>
 </template>
 <script>
-import axios from "axios";
+import useValidate from '@vuelidate/core';
+import { required, email, minLength } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
+import Swal from 'sweetalert2';
+import axios from 'axios';
 export default {  
-  data() {
+  setup(){
+    const state = reactive ({
+      name: "",
+      email: "",
+      password: "",
+      phone: "",
+    })
+    const rules = computed(() => {
+      return {
+        name: { required },
+        email: { required, email },
+        password: { required, minLength: minLength(6) },
+        phone: { required },
+      }
+    })
+    const v$ = useValidate(rules,state)
     return {
-      uname: "",
-      uemail: "",
-      upassword: "",
-      uphone: "",
-    };
+      state,
+      v$,
+    }
   },
   methods: {
     // add new admin
     async addAdmin() {
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      }   
       try {
         await axios.post("http://localhost:5000/admin", {
           adminID: Math.random().toString(36).substring(2),
@@ -119,13 +144,25 @@ export default {
           adminPassword: this.upassword,
           adminPhone: this.uphone,
         });
-        this.$router.go();
+        this.sAlert("success","Yeay..","Editing Admin Success")
+        this.close();
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Editing Admin Failed")
       }
+    },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
     },
     close() {
       this.$emit('close');
+      this.$router.go();
     },
   },
 };

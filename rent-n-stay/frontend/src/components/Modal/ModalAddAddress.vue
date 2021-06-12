@@ -28,7 +28,7 @@
                   Place Name
                 </label>
                 <select 
-                  v-model="uplaceid"
+                  v-model="state.placeid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
                   <option
@@ -38,6 +38,7 @@
                     {{place.placeID}} - {{ place.placeName }}
                   </option>
                 </select>
+                <span v-if="v$.placeid.$error" class="text-left block text-sm px-2 text-red-500">{{v$.placeid.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -51,8 +52,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Street"
-                  v-model="ustreet"
+                  v-model="state.street"
                 />
+                <span v-if="v$.street.$error" class="text-left block text-sm px-2 text-red-500">{{v$.street.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -66,8 +68,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="District"
-                  v-model="udistrict"
+                  v-model="state.district"
                 />
+                <span v-if="v$.district.$error" class="text-left block text-sm px-2 text-red-500">{{v$.district.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -81,8 +84,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Regency"
-                  v-model="uregency"
+                  v-model="state.regency"
                 />
+                <span v-if="v$.regency.$error" class="text-left block text-sm px-2 text-red-500">{{v$.regency.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -96,8 +100,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Postcode"
-                  v-model="upostcode"
+                  v-model="state.postcode"
                 />
+                <span v-if="v$.postcode.$error" class="text-left block text-sm px-2 text-red-500">{{v$.postcode.$errors[0].$message}}</span>
               </div>
 
               <div class="text-center mt-6">
@@ -118,15 +123,37 @@
   </transition>
 </template>
 <script>
+import useValidate from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
+import Swal from 'sweetalert2';
 import axios from "axios";
-export default {  
+export default {
+  setup(){
+    const state = reactive ({
+      placeid: "",
+      street: "",
+      district: "",
+      regency: "",
+      postcode: "",
+    })
+    const rules = computed(() => {
+      return {
+        placeid: { required },
+        street: { required },
+        district: { required},
+        regency: { required },
+        postcode: { required },
+      }
+    })
+    const v$ = useValidate(rules,state)
+    return {
+      state,
+      v$,
+    }
+  },
   data() {
     return {
-      uplaceid:"",
-      ustreet:"",
-      udistrict:"",
-      uregency:"",
-      upostcode:"",
       places:{}
     };
   },
@@ -136,18 +163,24 @@ export default {
   methods: {
     // add new address
     async addAddress() {
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      } 
       try {
         await axios.post("http://localhost:5000/address", {
           addressID: Math.random().toString(36).substring(2),
-          placeID: this.uplaceid,
-          addressStreet: this.ustreet,
-          addressDistrict: this.udistrict,
-          addressRegency: this.uregency,
-          addressPostcode: this.upostcode,
+          placeID: this.state.placeid,
+          addressStreet: this.state.street,
+          addressDistrict: this.state.district,
+          addressRegency: this.state.regency,
+          addressPostcode: this.state.postcode,
         });
-        this.$router.go();
+        this.sAlert("success","Yeay..","Adding Address Success")
+        this.close();
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Adding Address Failed")
       }
     },
     async getPlaces() {
@@ -158,8 +191,18 @@ export default {
         console.log(err);
       }
     },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
+    },
     close() {
       this.$emit('close');
+      this.$router.go();
     },
   },
 };

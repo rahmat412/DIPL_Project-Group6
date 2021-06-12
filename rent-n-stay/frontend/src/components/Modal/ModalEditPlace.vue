@@ -28,9 +28,10 @@
                   type="text"
                   class="disabled border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="ID"
-                  v-model="uid"
+                  v-model="state.id"
                   disabled
                 />
+                <span v-if="v$.id.$error" class="text-left block text-sm px-2 text-red-500">{{v$.id.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -44,8 +45,9 @@
                   type="text"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Place Name"
-                  v-model="uname"
+                  v-model="state.name"
                 />
+                <span v-if="v$.name.$error" class="text-left block text-sm px-2 text-red-500">{{v$.name.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -56,7 +58,7 @@
                   Owner Name
                 </label>
                 <select 
-                  v-model="uownerid"
+                  v-model="state.ownerid"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
                   <option
@@ -66,6 +68,7 @@
                     {{owner.ownerID}} - {{ owner.ownerName }}
                   </option>
                 </select>
+                <span v-if="v$.ownerid.$error" class="text-left block text-sm px-2 text-red-500">{{v$.ownerid.$errors[0].$message}}</span>
               </div>
 
               <div class="relative w-full mb-3">
@@ -79,7 +82,7 @@
                   type="number"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                   placeholder="Price"
-                  v-model="uprice"
+                  v-model="state.price"
                 />
               </div>
 
@@ -91,7 +94,7 @@
                   Category
                 </label>
                 <select 
-                  v-model="ucategory"
+                  v-model="state.category"
                   class="border-0 px-3 py-3 placeholder-emerald-300 text-emerald-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
                 >
                   <option
@@ -101,6 +104,46 @@
                     {{cat}}
                   </option>
                 </select>
+                <span v-if="v$.category.$error" class="text-left block text-sm px-2 text-red-500">{{v$.category.$errors[0].$message}}</span>
+              </div>
+
+              <div class="relative w-full mb-3">
+                <label
+                  class="text-left block uppercase text-emerald-600 text-xs font-bold mb-4"
+                  htmlFor="grid-password"
+                >
+                  Place Image
+                </label>
+                <div v-if="!state.image">
+                  <input
+                    style="display:none"
+                    type="file"
+                    @change="selectFile"
+                    ref="fileInput"
+                  >
+                  <a
+                    class="bg-emerald-500 text-white active:bg-emerald-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
+                    @click="$refs.fileInput.click()"
+                  >
+                    Pick Image 
+                  </a>
+                  <span v-if="message" class="text-sm px-2 text-red-500">{{message}}</span>
+                  <span v-if="v$.image.$error" class="text-left block text-sm px-2 text-red-500">{{v$.image.$errors[0].$message}}</span>
+                </div>
+                <div v-else class="text-center">
+                  <img :src="preview" v-if="preview"/>
+                  <img :src="'http://localhost:5000/'+state.image" v-else/>
+                  <label
+                    class="text-left block uppercase text-emerald-600 text-xs font-bold mb-4"
+                  >
+                    {{state.image.name}}
+                  </label>
+                  <a
+                    class="bg-emerald-500 text-white active:bg-emerald-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-4 w-full ease-linear transition-all duration-150"
+                    @click="removeImage">
+                    Remove image
+                  </a>
+                </div>
               </div>
 
               <div class="text-center mt-6">
@@ -121,15 +164,42 @@
   </transition>
 </template>
 <script>
+import useValidate from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
+import { reactive, computed } from 'vue';
+import Swal from 'sweetalert2';
 import axios from "axios";
 export default {
+  setup(){
+    const state = reactive ({
+      id: "",
+      name: "",
+      ownerid: "",
+      price: "",
+      category: "",
+      image: "",
+    })
+    const rules = computed(() => {
+      return {
+        id: { required },
+        name: { required },
+        ownerid: { required },
+        price:{ required },
+        category: { required },
+        image: { required },
+      }
+    })
+    const v$ = useValidate(rules,state)
+    return {
+      state,
+      v$,
+    }
+  },
   data() {
     return {
-      uid: "",
-      uname: "",
-      uownerid: "",
-      uprice: "",
-      ucategory: "",
+      preview: null,
+      message: "",
+      temp: "",
       cats:["Apartment","Boarding House","Dormitory"],
       owners: {},
     }
@@ -145,11 +215,13 @@ export default {
         await axios.get(
           'http://localhost:5000/place/'+this.id
         ).then((response) => {
-          this.uid = response.data.placeID;
-          this.uname = response.data.placeName;
-          this.uownerid = response.data.ownerID;
-          this.uprice = response.data.placePrice;
-          this.ucategory = response.data.placeCategory;
+          this.state.id = response.data.placeID;
+          this.state.name = response.data.placeName;
+          this.state.ownerid = response.data.ownerID;
+          this.state.price = response.data.placePrice;
+          this.state.category = response.data.placeCategory;
+          this.state.image = response.data.placeImage;
+          this.temp = this.state.image
         })
       } catch (err) {
         console.log(err);
@@ -164,22 +236,45 @@ export default {
       }
     },
     async editPlace() {
+      this.v$.$validate()
+      if (this.v$.$error) {
+        return
+      }
+      const formData = new FormData();
+      formData.append('file', this.state.image);
+      const img = await axios.post("http://localhost:5000/upload", formData)
+      if(this.state.image==this.temp){
+        img.data.filename = this.temp
+      }
       try {
         await axios.put('http://localhost:5000/place/'+this.id,
           {
-            owner_id: this.uownerid,
-            place_name: this.uname,
-            place_price: this.uprice,
-            place_category: this.ucategory,
+            owner_id: this.state.ownerid,
+            place_name: this.state.name,
+            place_price: this.state.price,
+            place_category: this.state.category,
+            place_image: img.data.filename,
           }
         );
-        this.$router.go()
+        this.sAlert("success","Yeay..","Editing Place Success");
+        this.close();
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Editing Place Failed");
       }
+    },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 1500
+      });
     },
     close() {
       this.$emit('close');
+      this.$router.go()
     },
   },
 };

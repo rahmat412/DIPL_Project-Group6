@@ -16,8 +16,7 @@
             </p>
             <div class="mt-12">
               <a
-                href=""
-                target="_blank"
+                href="/places"
                 class="get-started text-white font-bold px-6 py-4 rounded outline-none focus:outline-none mr-1 mb-1 bg-emerald-500 active:bg-emerald-600 uppercase text-sm shadow hover:shadow-lg ease-linear transition-all duration-150"
               >
                 Rent NOW 

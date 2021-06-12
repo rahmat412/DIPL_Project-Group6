@@ -15,21 +15,26 @@ export const register = (req, res) => {
                 }
             });
         } else {
-            res.status(500).send({ message: "email has already registered" });
+            res.status(500).send({ message: err });
         }
     });
 }
 
 export const login = (req, res) => {
     const data = req.body;
-    if (data.email !== 'admin' && data.password !== "admin") {
+    if (data.email == "admin@admin.com" && data.password == "admin1") {
+        const token = jwt.sign({ id: "super-admin" }, config.secret, {
+            expiresIn: 86400 // expires in 24 hours
+        });
+        res.send({ token: token, user: "super-admin", role: 0 });
+    } else {
         loginAdmin(data, (err, admin) => {
             if (err) {
                 loginOwner(data, (err, owner) => {
                     if (err) {
                         loginClient(data, (err, client) => {
                             if (err) {
-                                res.status(500).send({ message: "invalid email or password" });
+                                res.status(500).send({ message: err });
                             } else {
                                 const token = jwt.sign({ id: client.clientID }, config.secret, {
                                     expiresIn: 86400 // expires in 24 hours
@@ -51,13 +56,9 @@ export const login = (req, res) => {
                 res.send({ token: token, user: admin.adminID, role: 1 });
             }
         });
-    } else {
-        const token = jwt.sign({ id: "super-admin" }, config.secret, {
-            expiresIn: 86400 // expires in 24 hours
-        });
-        res.send({ token: token, user: "super-admin", role: 0 });
     }
 }
+
 export const logout = (req, res) => {
     const data = req.body;
     data.localStorage.removeItem('user');

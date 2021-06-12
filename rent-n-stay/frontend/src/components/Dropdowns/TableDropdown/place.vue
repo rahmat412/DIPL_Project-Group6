@@ -44,6 +44,7 @@
 <script>
 import { createPopper } from "@popperjs/core";
 import ModalEdit from '@/components/Modal/ModalEditPlace.vue';
+import Swal from 'sweetalert2';
 import axios from "axios";
 export default {
   data() {
@@ -78,10 +79,20 @@ export default {
     async deletePlace(id) {
       try {
         await axios.delete(`http://localhost:5000/place/${id}`);
-        this.getPlaces();
+        this.sAlert("success","Yeay..","Deleting Place Success");
       } catch (err) {
         console.log(err);
+        this.sAlert("error","Oops..","Deleting Place Failed");
       }
+    },
+    sAlert: function(ico, tit, txt) {
+      Swal.fire({
+        icon: ico,
+        title: tit,
+        text: txt,
+        showConfirmButton: false,
+        timer: 2000
+      });
     },
   },
 };
