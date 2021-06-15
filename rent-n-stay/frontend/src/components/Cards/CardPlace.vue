@@ -13,26 +13,29 @@
                 <p class="text-blueGray-500 font-semibold">
                     Price: Rp. {{place.placePrice}}
                 </p>
-                <p class="mb-4 text-blueGray-500 font-semibold">
+                <p class="text-blueGray-500 font-semibold">
                     Type: {{place.placeCategory}}
                 </p>
-                <p class="mb-4 text-blueGray-500 font-semibold">
+                <p class="text-blueGray-500 font-semibold">
                     Location: {{place.addressDistrict}}, {{place.addressRegency}}
                 </p>
-                <button class="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
-                    <router-link to="/"> Rent</router-link>
-                </button>
+                <router-link :to="'/places/'+place.placeID">
+                    <button class="mt-4 bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">
+                        Rent
+                    </button>
+                </router-link>
             </div>
         </div>  
 </template>
 <script>
-import team1 from "@/assets/img/team-1-800x800.jpg";
 export default {
     props: ["place"],
     data() {
-    return {
-      team1,
-    };
-  },
+        return {
+        };
+    },
+    methods: {
+
+    },
 };
 </script>

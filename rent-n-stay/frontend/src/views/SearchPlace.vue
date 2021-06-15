@@ -58,6 +58,7 @@
                 <card-place :place="place"/>
               </div>
             </div>
+            
           </div>
         </div>
       </section>

@@ -129,7 +129,7 @@ router.post('/order', createOrder);
 router.put('/order/:id', updateOrder);
 
 // Update Order by status
-router.put('/order/:id', updateOrderStatus);
+router.put('/orderStatus/:id', updateOrderStatus);
 
 // Delete Order
 router.delete('/order/:id', deleteOrder);

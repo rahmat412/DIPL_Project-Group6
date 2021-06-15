@@ -19,11 +19,7 @@ export const getOwnerById = (id, result) => {
             console.log(err);
             result(err, null);
         } else {
-            if (results.length > 0) {
-                result(false, results[0]);
-            } else {
-                result(true, null);
-            }
+            result(null, results[0]);
         }
     });
 }

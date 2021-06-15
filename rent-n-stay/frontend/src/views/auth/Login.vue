@@ -117,7 +117,7 @@ export default {
           } else if(role == 2){
             this.$router.push("/profile");
           } else if(role == 3){
-            this.$router.push("/profile");
+            this.$router.push("/places");
           } else {
             this.$router.push("/admin");
           }

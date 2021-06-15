@@ -35,7 +35,7 @@ export const getAddressByPlace = (id, result) => {
             console.log(err);
             result(err, null);
         } else {
-            result(null, results);
+            result(null, results[0]);
         }
     });
 }

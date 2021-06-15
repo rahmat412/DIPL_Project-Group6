@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 07, 2021 at 07:10 AM
+-- Generation Time: Jun 13, 2021 at 07:43 AM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.4.3
 
@@ -42,7 +42,8 @@ CREATE TABLE `address` (
 --
 
 INSERT INTO `address` (`addressID`, `placeID`, `addressStreet`, `addressDistrict`, `addressRegency`, `addressPostcode`) VALUES
-('0ixsrptdmas', '5584hmziaug', 'Jl. Komplek PBB', 'Dayeuhkolot', 'Bandung', '40257');
+('0ixsrptdmas', '5584hmziaug', 'Jl. Komplek PBB', 'Cikoneng', 'Dayeuhkolot', '40257'),
+('9wut24j4w24', '2ctgjam41b7', 'Jl. Umaya', 'Sukabirus', 'Dayeuhkolot', '40256');
 
 -- --------------------------------------------------------
 
@@ -130,7 +131,7 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`orderID`, `placeID`, `clientID`, `orderDate`, `orderCheckIn`, `orderCheckOut`, `orderStatus`) VALUES
-('pftr6b0wqm', '5584hmziaug', 'wtws271578r', '2021-06-07', '2021-06-07', '2021-06-14', 'Requested');
+('pftr6b0wqm', '5584hmziaug', 'wtws271578r', '0000-00-00', '2021-05-20', '2021-05-27', 'In Progress');
 
 -- --------------------------------------------------------
 
@@ -165,16 +166,17 @@ CREATE TABLE `place` (
   `ownerID` varchar(11) NOT NULL,
   `placeName` varchar(200) NOT NULL,
   `placePrice` int(11) NOT NULL,
-  `placeCategory` varchar(100) NOT NULL
+  `placeCategory` varchar(100) NOT NULL,
+  `placeImage` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `place`
 --
 
-INSERT INTO `place` (`placeID`, `ownerID`, `placeName`, `placePrice`, `placeCategory`) VALUES
-('2ctgjam41b7', 'cfpw8rqnwav', '7 Days', 2000000, 'Apartment'),
-('5584hmziaug', '5584hmziauf', 'Kontrakan PBB H14', 1000000, 'Boarding House');
+INSERT INTO `place` (`placeID`, `ownerID`, `placeName`, `placePrice`, `placeCategory`, `placeImage`) VALUES
+('2ctgjam41b7', 'cfpw8rqnwav', '7 Days', 2000000, 'Apartment', '1b70f1dcd6a41b7502aaa9dba9f431a5'),
+('5584hmziaug', '5584hmziauf', 'Kontrakan PBB H14', 1000000, 'Boarding House', 'f2007af8779f3415178dbb968a582023');
 
 --
 -- Indexes for dumped tables

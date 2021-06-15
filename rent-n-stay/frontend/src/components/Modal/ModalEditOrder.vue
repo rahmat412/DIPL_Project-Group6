@@ -224,6 +224,7 @@ export default {
           {
             client_id: this.state.clientid,
             place_id: this.state.placeid,
+            order_date: new Date(),
             order_checkin: this.state.range.start,
             order_checkout: this.state.range.end,
             order_status: this.state.status

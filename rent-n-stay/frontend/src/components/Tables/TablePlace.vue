@@ -142,7 +142,6 @@ export default {
   data() {
     return {
       isModalAddVisible: false,
-      isModalEditVisible: false,
       dropdownPopoverShow: false,
       places: {}, 
     };

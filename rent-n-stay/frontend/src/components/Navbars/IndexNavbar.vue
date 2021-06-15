@@ -66,6 +66,45 @@
             </li>
           </div>
 
+          <div v-if="is_client">
+            <li class="flex items-center ">
+              <router-link to="/ViewOrderClient" class="text-blueGray-600 font-bold">
+                <a
+                  class="hover:text-blueGray-500 text-blueGray-700 px-3 py-2 flex items-center text-s uppercase font-bold"
+                  target="_blank"
+                >
+                  <i class="fas fa-shopping-bag fa-2x text-blueGray-300"></i>
+                </a>
+              </router-link>
+            </li>
+          </div>
+
+          <div v-if="is_owner">
+            <li class="flex items-center ">
+              <router-link to="/ManagePlace" class="text-blueGray-600 font-bold">
+                <a
+                  class="hover:text-blueGray-500 text-blueGray-700 px-3 py-3 flex items-center text-s uppercase font-bold"
+                  target="_blank"
+                >
+                  Manage Place
+                </a>
+              </router-link>
+            </li>
+          </div>
+
+          <div v-if="is_owner">
+            <li class="flex items-center ">
+              <router-link to="/ViewOrderOwner" class="text-blueGray-600 font-bold">
+                <a
+                  class="hover:text-blueGray-500 text-blueGray-700 px-3 py-3 flex items-center text-s uppercase font-bold"
+                  target="_blank"
+                >
+                  <i class="fas fa-shopping-bag fa-2x text-blueGray-300"></i>
+                </a>
+              </router-link>
+            </li>
+          </div>
+
           <div v-if="isLoggedIn">
             <li class="flex items-center ">
               <user-dropdown />
@@ -98,7 +137,10 @@ export default {
   },
   computed : {
       isLoggedIn : function(){ return localStorage.getItem('jwt') != null},
-      is_admin : function(){ return (localStorage.getItem('role') == 1) || (localStorage.getItem('role') == 0)}
+      is_admin : function(){ return (localStorage.getItem('role') == 1) || (localStorage.getItem('role') == 0)},
+      is_owner : function(){ return localStorage.getItem('role') == 2},
+      is_client : function(){ return localStorage.getItem('role') == 3},
+      
   },
   methods: {
     setNavbarOpen: function () {

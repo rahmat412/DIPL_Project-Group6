@@ -30,7 +30,7 @@ export const getOrderById = (id, result) => {
 
 // Get Order Active by client
 export const getOrderActiveByClient = (id, result) => {
-    db.query("SELECT * FROM orders WHERE clientID = ? (orderStatus = 'Requested' or orderStatus = 'Accepted' orderStatus ='In Progress') order by date desc", [id], (err, results) => {
+    db.query("SELECT * FROM orders WHERE clientID = ? and (orderStatus = 'Requested' or orderStatus = 'Accepted' or orderStatus ='In Progress')", [id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);
@@ -42,7 +42,7 @@ export const getOrderActiveByClient = (id, result) => {
 
 // Get Order History by client
 export const getOrderHistoryByClient = (id, result) => {
-    db.query("SELECT * FROM orders WHERE clientID = ? (orderStatus = 'Completed' or orderStatus = 'Declined' or orderStatus ='Cancelled') order by date desc", [id], (err, results) => {
+    db.query("SELECT * FROM orders WHERE clientID = ? and (orderStatus = 'Completed' or orderStatus = 'Declined' or orderStatus ='Cancelled')", [id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);
@@ -54,7 +54,7 @@ export const getOrderHistoryByClient = (id, result) => {
 
 // Get Order Active by owner
 export const getOrderActiveByOwner = (id, result) => {
-    db.query("SELECT * FROM orders WHERE ownerID = ? (orderStatus = 'Requested' or orderStatus = 'Accepted' orderStatus ='In Progress') order by date desc", [id], (err, results) => {
+    db.query("SELECT * FROM orders natural join owner WHERE ownerID = ? and (orderStatus = 'Requested' or orderStatus = 'Accepted' or orderStatus ='In Progress')", [id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);
@@ -66,7 +66,7 @@ export const getOrderActiveByOwner = (id, result) => {
 
 // Get Order History by client
 export const getOrderHistoryByOwner = (id, result) => {
-    db.query("SELECT * FROM orders WHERE ownerID = ? (orderStatus = 'Completed' or orderStatus = 'Declined' or orderStatus ='Cancelled') order by date desc", [id], (err, results) => {
+    db.query("SELECT * FROM orders natural join owner WHERE ownerID = ? and (orderStatus = 'Completed' or orderStatus = 'Declined' or orderStatus ='Cancelled')", [id], (err, results) => {
         if (err) {
             console.log(err);
             result(err, null);

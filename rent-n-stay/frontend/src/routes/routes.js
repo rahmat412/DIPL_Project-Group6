@@ -33,6 +33,14 @@ import Address from "@/views/admin/ManageAddress.vue";
 import Facility from "@/views/admin/ManageFacility.vue";
 import Order from "@/views/admin/ManageOrder.vue";
 
+// client menu
+import PlaceDetail from "@/views/client/client_viewPlace.vue";
+import orderClient from "@/views/client/client_viewOrder.vue";
+
+// owner menu
+import orderOwner from "@/views/owner/owner_viewOrder.vue";
+import PlaceOwner from "@/views/owner/owner_viewPlace.vue";
+
 // routes
 const router = createRouter({
     history: createWebHistory(),
@@ -128,6 +136,30 @@ const router = createRouter({
             path: "/places",
             component: SearchPlace,
         }, {
+            path: "/places/:id",
+            component: PlaceDetail,
+        }, {
+            path: "/ViewOrderClient",
+            component: orderClient,
+            beforeEnter: requireAuth,
+            meta: {
+                roles: 'client'
+            }
+        }, {
+            path: "/ViewOrderOwner",
+            component: orderOwner,
+            beforeEnter: requireAuth,
+            meta: {
+                roles: 'owner'
+            }
+        }, {
+            path: "/ManagePlace",
+            component: PlaceOwner,
+            beforeEnter: requireAuth,
+            meta: {
+                roles: 'owner'
+            }
+        }, {
             path: "/profile",
             component: Profile,
             beforeEnter: requireAuth,
@@ -141,7 +173,7 @@ const router = createRouter({
             path: "/",
             component: Home,
         },
-        { path: "/:pathMatch(.*)*", redirect: "/alert" },
+
     ]
 });
 
